@@ -1,6 +1,7 @@
 using Shared;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 namespace ManagementConsole
 {
@@ -11,28 +12,27 @@ namespace ManagementConsole
         private CancellationToken _cancelationToken;
         private readonly IList<SocketItem> _connectionsList;
         private readonly IProgress<Socket> _notifyConnection;
-        private readonly IProgress<string> _notifyMessage;
-        private readonly ManagementSocketConnection _connectionManager;
+        private FrmManager? _FrmManager = null;
         public FrmMain()
         {
             InitializeComponent();
 
-            _connectionsList = new List<SocketItem>();
+            _cancelationToken = new CancellationToken(false);
 
-            _connectionManager = new ManagementSocketConnection();
+            _connectionsList = new List<SocketItem>();
 
             _endpoint = new IPEndPoint(new IPAddress(new byte[] { 127, 0, 0, 1 }), 3030);
 
-            _webSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _webSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            {
+                ReceiveTimeout = 0,
+                SendTimeout = 0,
+                ReceiveBufferSize = 8192,
+                SendBufferSize = 8192
+            };
 
             _notifyConnection = new Progress<Socket>(NotifyAcceptedConnection);
 
-            _notifyMessage = new Progress<string>(NotifyMessage);
-        }
-
-        private void NotifyMessage(string message)
-        {
-            MessageBox.Show(message);
         }
 
         private void NotifyAcceptedConnection(Socket socket)
@@ -55,26 +55,27 @@ namespace ManagementConsole
         private void AddConnectionInTheTaskList(Socket socket)
         {
             _connectionsList.Add(
-               new SocketItem
-               {
-                   Handler = socket.Handle.ToString(),
-                   Socket = socket,
-                   Task = _connectionManager.SocketReaderAsync(socket, _notifyMessage, _cancelationToken)
-               });
+               new SocketItem(
+                   socket.Handle.ToString(),
+                   socket,
+                   ManagementSocketConnection.SocketReaderAsync(socket, _cancelationToken)
+                   )
+               );
         }
 
         public void StartListening()
         {
             _connectionsList.Add(
-                new SocketItem() {
-                    Handler = _webSocket.Handle.ToString(),
-                    Socket = _webSocket,
-                    Task = _connectionManager.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken)
-                });
+                new SocketItem(
+                    _webSocket.Handle.ToString(),
+                    _webSocket,
+                    ManagementSocketConnection.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken))
+            );
         }
 
         private void BtnAtivar_Click(object sender, EventArgs e)
         {
+            _cancelationToken = new CancellationToken(false);
             BtnAtivar.Enabled = false;
             BtnCancelar.Enabled = true;
             StartListening();
@@ -82,21 +83,56 @@ namespace ManagementConsole
 
         private void BtnCancelar_Click(object sender, EventArgs e)
         {
+            _cancelationToken = new CancellationToken(true);
             BtnAtivar.Enabled = true;
             BtnCancelar.Enabled = false;
+            StopListening();
         }
 
-        private void EnviarMensagemToolStripMenuItem_Click(object sender, EventArgs e)
+        private void StopListening()
         {
-            ListViewItem.ListViewSubItem item = LVConnections.SelectedItems[0].SubItems[0];
+            _webSocket?.Close();
+        }
 
-            SocketItem connectionItem = _connectionsList.Where(x=> x.Handler == item.Text).Single();
-            _connectionManager.SocketWriterAsync(connectionItem.Socket, "Hello Word!", _cancelationToken);
+        private async void EnviarMensagemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string socketHandler = GetSocketHandlerFromLVConnection();
+            SocketItem connectionItem = GetSocketConnectionFromConnectionsList(socketHandler);
+
+            string message = string.Join("", new[] { ManagementSocketConnection.SocketCommand(SocketCommands.NotifyMessage), "Hello Word!" });
+            byte[] buffer = Encoding.UTF8.GetBytes(message);
+
+            await ManagementSocketConnection.SocketWriterAsync(connectionItem.Socket, buffer, _cancelationToken);
+        }
+
+        private SocketItem GetSocketConnectionFromConnectionsList(string socketHandler)
+        {
+            return _connectionsList.Where(x => x.Handler.Equals(socketHandler)).Single();
+        }
+
+        private string GetSocketHandlerFromLVConnection()
+        {
+            return LVConnections.SelectedItems[0].SubItems[0].Text;
+        }
+
+        private void GerenciarArquivosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string socketHandler = GetSocketHandlerFromLVConnection();
+            SocketItem connectionItem = GetSocketConnectionFromConnectionsList(socketHandler);
+
+            _FrmManager = new FrmManager(connectionItem.Socket, _cancelationToken);
+            _FrmManager.ShowDialog();
         }
     }
 
     public class SocketItem
     {
+        public SocketItem(string handler, Socket socket, Task task)
+        {
+            Handler = handler;
+            Socket = socket;
+            Task = task;
+        }
         public string Handler { get; set; }
         public Socket Socket { get; set; }
         public Task Task { get; set; }

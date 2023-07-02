@@ -33,10 +33,11 @@
             CLHandlerId = new ColumnHeader();
             CLIP = new ColumnHeader();
             CLOS = new ColumnHeader();
-            BtnAtivar = new Button();
-            BtnCancelar = new Button();
             ctxMenuCommands = new ContextMenuStrip(components);
             enviarMensagemToolStripMenuItem = new ToolStripMenuItem();
+            BtnAtivar = new Button();
+            BtnCancelar = new Button();
+            gerenciarArquivosToolStripMenuItem = new ToolStripMenuItem();
             ctxMenuCommands.SuspendLayout();
             SuspendLayout();
             // 
@@ -68,6 +69,19 @@
             CLOS.Text = "OS";
             CLOS.Width = 200;
             // 
+            // ctxMenuCommands
+            // 
+            ctxMenuCommands.Items.AddRange(new ToolStripItem[] { enviarMensagemToolStripMenuItem, gerenciarArquivosToolStripMenuItem });
+            ctxMenuCommands.Name = "ctxMenuCommands";
+            ctxMenuCommands.Size = new Size(181, 70);
+            // 
+            // enviarMensagemToolStripMenuItem
+            // 
+            enviarMensagemToolStripMenuItem.Name = "enviarMensagemToolStripMenuItem";
+            enviarMensagemToolStripMenuItem.Size = new Size(180, 22);
+            enviarMensagemToolStripMenuItem.Text = "Enviar Mensagem";
+            enviarMensagemToolStripMenuItem.Click += EnviarMensagemToolStripMenuItem_Click;
+            // 
             // BtnAtivar
             // 
             BtnAtivar.Location = new Point(466, 189);
@@ -88,18 +102,12 @@
             BtnCancelar.UseVisualStyleBackColor = true;
             BtnCancelar.Click += BtnCancelar_Click;
             // 
-            // ctxMenuCommands
+            // gerenciarArquivosToolStripMenuItem
             // 
-            ctxMenuCommands.Items.AddRange(new ToolStripItem[] { enviarMensagemToolStripMenuItem });
-            ctxMenuCommands.Name = "ctxMenuCommands";
-            ctxMenuCommands.Size = new Size(181, 48);
-            // 
-            // enviarMensagemToolStripMenuItem
-            // 
-            enviarMensagemToolStripMenuItem.Name = "enviarMensagemToolStripMenuItem";
-            enviarMensagemToolStripMenuItem.Size = new Size(180, 22);
-            enviarMensagemToolStripMenuItem.Text = "Enviar Mensagem";
-            enviarMensagemToolStripMenuItem.Click += EnviarMensagemToolStripMenuItem_Click;
+            gerenciarArquivosToolStripMenuItem.Name = "gerenciarArquivosToolStripMenuItem";
+            gerenciarArquivosToolStripMenuItem.Size = new Size(180, 22);
+            gerenciarArquivosToolStripMenuItem.Text = "Gerenciar Arquivos";
+            gerenciarArquivosToolStripMenuItem.Click += GerenciarArquivosToolStripMenuItem_Click;
             // 
             // FrmMain
             // 
@@ -124,5 +132,6 @@
         private ColumnHeader CLOS;
         private ContextMenuStrip ctxMenuCommands;
         private ToolStripMenuItem enviarMensagemToolStripMenuItem;
+        private ToolStripMenuItem gerenciarArquivosToolStripMenuItem;
     }
 }

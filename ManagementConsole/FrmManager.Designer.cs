@@ -29,17 +29,43 @@
         private void InitializeComponent()
         {
             listView1 = new ListView();
+            columnHeader1 = new ColumnHeader();
+            columnHeader2 = new ColumnHeader();
+            columnHeader3 = new ColumnHeader();
+            columnHeader4 = new ColumnHeader();
             BtnLoad = new Button();
             TxtPath = new TextBox();
             SuspendLayout();
             // 
             // listView1
             // 
+            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
             listView1.Location = new Point(11, 36);
             listView1.Name = "listView1";
             listView1.Size = new Size(532, 426);
             listView1.TabIndex = 0;
             listView1.UseCompatibleStateImageBehavior = false;
+            listView1.View = View.List;
+            listView1.MouseClick += listView1_MouseClick;
+            // 
+            // columnHeader1
+            // 
+            columnHeader1.Text = "Name";
+            columnHeader1.Width = 150;
+            // 
+            // columnHeader2
+            // 
+            columnHeader2.Text = "Type";
+            columnHeader2.Width = 80;
+            // 
+            // columnHeader3
+            // 
+            columnHeader3.Text = "Path";
+            columnHeader3.Width = 100;
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "Size";
             // 
             // BtnLoad
             // 
@@ -49,6 +75,7 @@
             BtnLoad.TabIndex = 1;
             BtnLoad.Text = "Load";
             BtnLoad.UseVisualStyleBackColor = true;
+            BtnLoad.Click += BtnLoad_Click;
             // 
             // TxtPath
             // 
@@ -56,12 +83,13 @@
             TxtPath.Name = "TxtPath";
             TxtPath.Size = new Size(451, 23);
             TxtPath.TabIndex = 2;
+            TxtPath.Text = "C:\\";
             // 
             // FrmManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(555, 471);
+            ClientSize = new Size(555, 514);
             Controls.Add(TxtPath);
             Controls.Add(BtnLoad);
             Controls.Add(listView1);
@@ -75,5 +103,9 @@
         private ListView listView1;
         private Button BtnLoad;
         private TextBox TxtPath;
+        private ColumnHeader columnHeader1;
+        private ColumnHeader columnHeader2;
+        private ColumnHeader columnHeader3;
+        private ColumnHeader columnHeader4;
     }
 }
