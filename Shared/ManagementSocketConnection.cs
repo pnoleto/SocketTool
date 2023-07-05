@@ -1,6 +1,5 @@
 ﻿using System.Net.Sockets;
 using System.Net;
-using System;
 
 namespace Shared
 {
@@ -15,24 +14,10 @@ namespace Shared
         RemoteShutdown,
         PingTarget,
         ExecFile,
+        GetProcesses
     }
     public class ManagementSocketConnection
     {
-        private static readonly IDictionary<SocketCommands, string> _listCommands = new Dictionary<SocketCommands, string>()
-        {
-            {SocketCommands.NotifyMessage, "<NotifyMessage>" },
-            {SocketCommands.ExplorePath, "<ExplorePath>" },
-            {SocketCommands.UploadFile, "<NotifyMSG>" },
-            {SocketCommands.DownLoadFile, "<UploadFile>" },
-            {SocketCommands.NotifyShellCommand, "<NotifyShellCommand>" },
-            {SocketCommands.NotifyOSInformations, "<NotifyOSInformations>" },
-            {SocketCommands.RemoteShutdown, "<RemoteShutdown>" },
-            {SocketCommands.PingTarget, "<PingTarget>" },
-            {SocketCommands.ExecFile, "<ExecFile>" }
-        };
-
-        public static string SocketCommand(SocketCommands SocketCommand) => _listCommands[SocketCommand];
-
         public ManagementSocketConnection() { }
 
         public static Task ConnectionPoolingAsync(
@@ -98,18 +83,25 @@ namespace Shared
         {
             return Task.Run(async () =>
             {
-                long received = 0;
+                byte[] buffer = Array.Empty<byte>();
 
-                byte[] buffer = new byte[webSocket.Available];
+                using MemoryStream stream = new();
 
-                while (received < buffer.LongLength)
+                do
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    received += await webSocket.ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
-                    notifyProgress?.Report(received);
-                }
 
-                return buffer;
+                    buffer = new byte[webSocket.Available];
+
+                    await webSocket.ReceiveAsync(buffer, SocketFlags.None, cancellationToken);
+
+                    await stream.WriteAsync(buffer);
+
+                    notifyProgress?.Report(stream.Length);
+                }
+                while (webSocket.Available > 0);
+
+                return stream.ToArray();
 
             }, cancellationToken);
         }
@@ -124,12 +116,13 @@ namespace Shared
             {
                 long sent = 0;
 
-                while (sent < buffer.LongLength)
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    sent += await webSocket.SendAsync(buffer, SocketFlags.None, cancellationToken);
-                    notifyProgress?.Report(sent);
-                }
+                using MemoryStream stream = new();
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                sent = await webSocket.SendAsync(buffer, SocketFlags.None, cancellationToken);
+
+                notifyProgress?.Report(sent);
 
             }, cancellationToken);
         }

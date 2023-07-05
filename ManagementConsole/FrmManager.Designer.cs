@@ -46,7 +46,7 @@
             listView1.TabIndex = 0;
             listView1.UseCompatibleStateImageBehavior = false;
             listView1.View = View.List;
-            listView1.MouseClick += listView1_MouseClick;
+            listView1.MouseClick += ListView1_MouseClick;
             // 
             // columnHeader1
             // 
@@ -69,7 +69,7 @@
             // 
             // BtnLoad
             // 
-            BtnLoad.Location = new Point(11, 7);
+            BtnLoad.Location = new Point(11, 8);
             BtnLoad.Name = "BtnLoad";
             BtnLoad.Size = new Size(75, 23);
             BtnLoad.TabIndex = 1;
@@ -89,7 +89,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(555, 514);
+            ClientSize = new Size(555, 478);
             Controls.Add(TxtPath);
             Controls.Add(BtnLoad);
             Controls.Add(listView1);

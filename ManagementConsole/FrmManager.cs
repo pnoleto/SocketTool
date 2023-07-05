@@ -18,7 +18,7 @@ namespace ManagementConsole
 
         public async void LoadPath(string path)
         {
-            string command = ManagementSocketConnection.SocketCommand(SocketCommands.ExplorePath);
+            string command = Types.SocketCommand(SocketCommands.ExplorePath);
 
             await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
 
@@ -30,10 +30,12 @@ namespace ManagementConsole
 
             var LVItems = paths?.Count > 0 ?
                 paths.Select(x =>
-                new ListViewItem(new string[] { x.Name, x.Type, x.Path, x.Size.ToString() })).ToArray() :
+                new ListViewItem(new [] { x.Name, x.Type, x.Path, x.Size.ToString() })).ToArray() :
                 Array.Empty<ListViewItem>();
 
             listView1.Items.AddRange(LVItems);
+
+            listView1.Refresh();
         }
 
         private void BtnLoad_Click(object sender, EventArgs e)
@@ -48,24 +50,9 @@ namespace ManagementConsole
             }
         }
 
-        private void listView1_MouseClick(object sender, MouseEventArgs e)
+        private void ListView1_MouseClick(object sender, MouseEventArgs e)
         {
             TxtPath.Text = listView1.SelectedItems[0]?.SubItems[2]?.Text;
         }
-    }
-
-    internal class ItemType
-    {
-        public ItemType(string Name, string Type, string Path, long Size)
-        {
-            this.Name = Name;
-            this.Type = Type;
-            this.Path = Path;
-            this.Size = Size;
-        }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Path { get; set; }
-        public long Size { get; set; }
     }
 }

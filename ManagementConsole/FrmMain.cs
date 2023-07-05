@@ -13,6 +13,7 @@ namespace ManagementConsole
         private readonly IList<SocketItem> _connectionsList;
         private readonly IProgress<Socket> _notifyConnection;
         private FrmManager? _FrmManager = null;
+        private FrmProcesses? _FrmProcesses = null;
         public FrmMain()
         {
             InitializeComponent();
@@ -25,10 +26,10 @@ namespace ManagementConsole
 
             _webSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveTimeout = 0,
-                SendTimeout = 0,
-                ReceiveBufferSize = 8192,
-                SendBufferSize = 8192
+                ReceiveTimeout = 15,
+                SendTimeout = 15,
+                ReceiveBufferSize = 2048,
+                SendBufferSize = 2048
             };
 
             _notifyConnection = new Progress<Socket>(NotifyAcceptedConnection);
@@ -99,7 +100,7 @@ namespace ManagementConsole
             string socketHandler = GetSocketHandlerFromLVConnection();
             SocketItem connectionItem = GetSocketConnectionFromConnectionsList(socketHandler);
 
-            string message = string.Join("", new[] { ManagementSocketConnection.SocketCommand(SocketCommands.NotifyMessage), "Hello Word!" });
+            string message = string.Join("", new[] { Types.SocketCommand(SocketCommands.NotifyMessage), "Hello Word!" });
             byte[] buffer = Encoding.UTF8.GetBytes(message);
 
             await ManagementSocketConnection.SocketWriterAsync(connectionItem.Socket, buffer, _cancelationToken);
@@ -122,6 +123,15 @@ namespace ManagementConsole
 
             _FrmManager = new FrmManager(connectionItem.Socket, _cancelationToken);
             _FrmManager.ShowDialog();
+        }
+
+        private void gerenciarProcessosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string socketHandler = GetSocketHandlerFromLVConnection();
+            SocketItem connectionItem = GetSocketConnectionFromConnectionsList(socketHandler);
+
+            _FrmProcesses = new FrmProcesses(connectionItem.Socket, _cancelationToken);
+            _FrmProcesses.ShowDialog();
         }
     }
 
