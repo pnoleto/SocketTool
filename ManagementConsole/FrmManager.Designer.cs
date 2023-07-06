@@ -28,25 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            listView1 = new ListView();
+            LVFilesAndDirectories = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
             BtnLoad = new Button();
             TxtPath = new TextBox();
+            radioButton3 = new RadioButton();
+            radioButton2 = new RadioButton();
+            radioButton1 = new RadioButton();
             SuspendLayout();
             // 
-            // listView1
+            // LVFilesAndDirectories
             // 
-            listView1.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
-            listView1.Location = new Point(11, 36);
-            listView1.Name = "listView1";
-            listView1.Size = new Size(532, 426);
-            listView1.TabIndex = 0;
-            listView1.UseCompatibleStateImageBehavior = false;
-            listView1.View = View.List;
-            listView1.MouseClick += ListView1_MouseClick;
+            LVFilesAndDirectories.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+            LVFilesAndDirectories.Location = new Point(12, 37);
+            LVFilesAndDirectories.Name = "LVFilesAndDirectories";
+            LVFilesAndDirectories.Size = new Size(532, 426);
+            LVFilesAndDirectories.TabIndex = 0;
+            LVFilesAndDirectories.UseCompatibleStateImageBehavior = false;
+            LVFilesAndDirectories.View = View.List;
+            LVFilesAndDirectories.MouseClick += ListView1_MouseClick;
             // 
             // columnHeader1
             // 
@@ -85,14 +88,53 @@
             TxtPath.TabIndex = 2;
             TxtPath.Text = "C:\\";
             // 
+            // radioButton3
+            // 
+            radioButton3.AutoSize = true;
+            radioButton3.Location = new Point(212, 469);
+            radioButton3.Name = "radioButton3";
+            radioButton3.Size = new Size(43, 19);
+            radioButton3.TabIndex = 7;
+            radioButton3.TabStop = true;
+            radioButton3.Text = "List";
+            radioButton3.UseVisualStyleBackColor = true;
+            radioButton3.CheckedChanged += radioButton3_CheckedChanged;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(100, 469);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(80, 19);
+            radioButton2.TabIndex = 6;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Large Icon";
+            radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(12, 469);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(60, 19);
+            radioButton1.TabIndex = 5;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Details";
+            radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            // 
             // FrmManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(555, 478);
+            ClientSize = new Size(555, 516);
+            Controls.Add(radioButton3);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
             Controls.Add(TxtPath);
             Controls.Add(BtnLoad);
-            Controls.Add(listView1);
+            Controls.Add(LVFilesAndDirectories);
             Name = "FrmManager";
             ResumeLayout(false);
             PerformLayout();
@@ -100,12 +142,15 @@
 
         #endregion
 
-        private ListView listView1;
+        private ListView LVFilesAndDirectories;
         private Button BtnLoad;
         private TextBox TxtPath;
         private ColumnHeader columnHeader1;
         private ColumnHeader columnHeader2;
         private ColumnHeader columnHeader3;
         private ColumnHeader columnHeader4;
+        private RadioButton radioButton3;
+        private RadioButton radioButton2;
+        private RadioButton radioButton1;
     }
 }

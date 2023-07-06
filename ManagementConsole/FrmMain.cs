@@ -26,10 +26,10 @@ namespace ManagementConsole
 
             _webSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveTimeout = 15,
-                SendTimeout = 15,
-                ReceiveBufferSize = 2048,
-                SendBufferSize = 2048
+                ReceiveTimeout = 30,
+                SendTimeout = 30,
+                ReceiveBufferSize = 8048,
+                SendBufferSize = 8048
             };
 
             _notifyConnection = new Progress<Socket>(NotifyAcceptedConnection);
@@ -47,10 +47,9 @@ namespace ManagementConsole
             LVConnections.Items.Add(new ListViewItem(
                 new string[] {
                     socket.Handle.ToString(),
-                    socket.RemoteEndPoint?.ToString(),
+                    socket.RemoteEndPoint.ToString(),
                     "OS"
-                })
-            );
+                }));
         }
 
         private void AddConnectionInTheTaskList(Socket socket)
@@ -58,20 +57,12 @@ namespace ManagementConsole
             _connectionsList.Add(
                new SocketItem(
                    socket.Handle.ToString(),
-                   socket,
-                   ManagementSocketConnection.SocketReaderAsync(socket, _cancelationToken)
-                   )
-               );
+                   socket));
         }
 
         public void StartListening()
         {
-            _connectionsList.Add(
-                new SocketItem(
-                    _webSocket.Handle.ToString(),
-                    _webSocket,
-                    ManagementSocketConnection.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken))
-            );
+            ManagementSocketConnection.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken);
         }
 
         private void BtnAtivar_Click(object sender, EventArgs e)
@@ -133,18 +124,5 @@ namespace ManagementConsole
             _FrmProcesses = new FrmProcesses(connectionItem.Socket, _cancelationToken);
             _FrmProcesses.ShowDialog();
         }
-    }
-
-    public class SocketItem
-    {
-        public SocketItem(string handler, Socket socket, Task task)
-        {
-            Handler = handler;
-            Socket = socket;
-            Task = task;
-        }
-        public string Handler { get; set; }
-        public Socket Socket { get; set; }
-        public Task Task { get; set; }
     }
 }

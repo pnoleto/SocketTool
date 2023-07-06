@@ -36,9 +36,9 @@
             ctxMenuCommands = new ContextMenuStrip(components);
             enviarMensagemToolStripMenuItem = new ToolStripMenuItem();
             gerenciarArquivosToolStripMenuItem = new ToolStripMenuItem();
+            gerenciarProcessosToolStripMenuItem = new ToolStripMenuItem();
             BtnAtivar = new Button();
             BtnCancelar = new Button();
-            gerenciarProcessosToolStripMenuItem = new ToolStripMenuItem();
             ctxMenuCommands.SuspendLayout();
             SuspendLayout();
             // 
@@ -48,7 +48,7 @@
             LVConnections.Columns.AddRange(new ColumnHeader[] { CLHandlerId, CLIP, CLOS });
             LVConnections.ContextMenuStrip = ctxMenuCommands;
             LVConnections.FullRowSelect = true;
-            LVConnections.Location = new Point(12, 12);
+            LVConnections.Location = new Point(12, 38);
             LVConnections.Name = "LVConnections";
             LVConnections.Size = new Size(448, 426);
             LVConnections.TabIndex = 0;
@@ -63,36 +63,43 @@
             // CLIP
             // 
             CLIP.Text = "IP";
-            CLIP.Width = 200;
+            CLIP.Width = 180;
             // 
             // CLOS
             // 
             CLOS.Text = "OS";
-            CLOS.Width = 200;
+            CLOS.Width = 160;
             // 
             // ctxMenuCommands
             // 
             ctxMenuCommands.Items.AddRange(new ToolStripItem[] { enviarMensagemToolStripMenuItem, gerenciarArquivosToolStripMenuItem, gerenciarProcessosToolStripMenuItem });
             ctxMenuCommands.Name = "ctxMenuCommands";
-            ctxMenuCommands.Size = new Size(181, 92);
+            ctxMenuCommands.Size = new Size(180, 70);
             // 
             // enviarMensagemToolStripMenuItem
             // 
             enviarMensagemToolStripMenuItem.Name = "enviarMensagemToolStripMenuItem";
-            enviarMensagemToolStripMenuItem.Size = new Size(180, 22);
+            enviarMensagemToolStripMenuItem.Size = new Size(179, 22);
             enviarMensagemToolStripMenuItem.Text = "Enviar Mensagem";
             enviarMensagemToolStripMenuItem.Click += EnviarMensagemToolStripMenuItem_Click;
             // 
             // gerenciarArquivosToolStripMenuItem
             // 
             gerenciarArquivosToolStripMenuItem.Name = "gerenciarArquivosToolStripMenuItem";
-            gerenciarArquivosToolStripMenuItem.Size = new Size(180, 22);
+            gerenciarArquivosToolStripMenuItem.Size = new Size(179, 22);
             gerenciarArquivosToolStripMenuItem.Text = "Gerenciar Arquivos";
             gerenciarArquivosToolStripMenuItem.Click += GerenciarArquivosToolStripMenuItem_Click;
             // 
+            // gerenciarProcessosToolStripMenuItem
+            // 
+            gerenciarProcessosToolStripMenuItem.Name = "gerenciarProcessosToolStripMenuItem";
+            gerenciarProcessosToolStripMenuItem.Size = new Size(179, 22);
+            gerenciarProcessosToolStripMenuItem.Text = "Gerenciar Processos";
+            gerenciarProcessosToolStripMenuItem.Click += gerenciarProcessosToolStripMenuItem_Click;
+            // 
             // BtnAtivar
             // 
-            BtnAtivar.Location = new Point(466, 189);
+            BtnAtivar.Location = new Point(304, 9);
             BtnAtivar.Name = "BtnAtivar";
             BtnAtivar.Size = new Size(75, 23);
             BtnAtivar.TabIndex = 1;
@@ -102,7 +109,7 @@
             // 
             // BtnCancelar
             // 
-            BtnCancelar.Location = new Point(466, 218);
+            BtnCancelar.Location = new Point(385, 9);
             BtnCancelar.Name = "BtnCancelar";
             BtnCancelar.Size = new Size(75, 23);
             BtnCancelar.TabIndex = 2;
@@ -110,18 +117,11 @@
             BtnCancelar.UseVisualStyleBackColor = true;
             BtnCancelar.Click += BtnCancelar_Click;
             // 
-            // gerenciarProcessosToolStripMenuItem
-            // 
-            gerenciarProcessosToolStripMenuItem.Name = "gerenciarProcessosToolStripMenuItem";
-            gerenciarProcessosToolStripMenuItem.Size = new Size(180, 22);
-            gerenciarProcessosToolStripMenuItem.Text = "Gerenciar Processos";
-            gerenciarProcessosToolStripMenuItem.Click += gerenciarProcessosToolStripMenuItem_Click;
-            // 
             // FrmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(554, 450);
+            ClientSize = new Size(472, 476);
             Controls.Add(BtnCancelar);
             Controls.Add(BtnAtivar);
             Controls.Add(LVConnections);

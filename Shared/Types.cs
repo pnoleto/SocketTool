@@ -1,6 +1,48 @@
 ﻿
+using System.Net.Sockets;
+
 namespace Shared
 {
+    public static class MyExtension
+    {
+        public enum SizeUnits
+        {
+            Byte, KB, MB, GB, TB, PB, EB, ZB, YB
+        }
+
+        public static string ToSize(this Int64 value, SizeUnits unit)
+        {
+            return (value / (double)Math.Pow(1_024, (long)unit)).ToString($"0.00 {Symbol(unit)}");
+        }
+
+        private static string Symbol(SizeUnits sizeUnits)
+        {
+            switch (sizeUnits)
+            {
+                case SizeUnits.Byte: return "bytes";
+                case SizeUnits.KB: return "KB";
+                case SizeUnits.MB: return "MB";
+                case SizeUnits.GB: return "GB";
+                case SizeUnits.TB: return "TB";
+                case SizeUnits.PB: return "PB";
+                case SizeUnits.EB: return "EB";
+                case SizeUnits.ZB: return "ZB";
+                case SizeUnits.YB: return "YB";
+                default: return "";
+            }
+
+        }
+    }
+    public class SocketItem
+    {
+        public SocketItem(string handler, Socket socket)
+        {
+            Handler = handler;
+            Socket = socket;
+        }
+        public string Handler { get; set; }
+        public Socket Socket { get; set; }
+    }
     public class ItemType
     {
         public ItemType(string Name, string Type, string Path, long Size)

@@ -18,6 +18,8 @@ namespace ManagementConsole
 
         public async void LoadPath(string path)
         {
+            LVFilesAndDirectories.Items.Clear();
+
             string command = Types.SocketCommand(SocketCommands.ExplorePath);
 
             await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
@@ -26,16 +28,13 @@ namespace ManagementConsole
 
             var paths = JsonConvert.DeserializeObject<List<ItemType>>(Encoding.UTF8.GetString(buffer));
 
-            listView1.Clear();
-
-            var LVItems = paths?.Count > 0 ?
-                paths.Select(x =>
-                new ListViewItem(new [] { x.Name, x.Type, x.Path, x.Size.ToString() })).ToArray() :
-                Array.Empty<ListViewItem>();
-
-            listView1.Items.AddRange(LVItems);
-
-            listView1.Refresh();
+            paths?.ForEach(path => LVFilesAndDirectories.Items.Add(
+                new ListViewItem(new[] {
+                path.Name,
+                    path.Type,
+                    path.Path,
+                    MyExtension.ToSize(path.Size, MyExtension.SizeUnits.KB)
+                })));
         }
 
         private void BtnLoad_Click(object sender, EventArgs e)
@@ -52,7 +51,22 @@ namespace ManagementConsole
 
         private void ListView1_MouseClick(object sender, MouseEventArgs e)
         {
-            TxtPath.Text = listView1.SelectedItems[0]?.SubItems[2]?.Text;
+            TxtPath.Text = LVFilesAndDirectories.SelectedItems[0]?.SubItems[2]?.Text;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            LVFilesAndDirectories.View = View.Details;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            LVFilesAndDirectories.View = View.LargeIcon;
+        }
+
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            LVFilesAndDirectories.View = View.List;
         }
     }
 }

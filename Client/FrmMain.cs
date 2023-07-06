@@ -21,10 +21,10 @@ namespace Client
 
             clientSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveTimeout = 15,
-                SendTimeout = 15,
-                ReceiveBufferSize = 2048,
-                SendBufferSize = 2048
+                ReceiveTimeout = 30,
+                SendTimeout = 30,
+                ReceiveBufferSize = 8048,
+                SendBufferSize = 8048
             };
         }
 

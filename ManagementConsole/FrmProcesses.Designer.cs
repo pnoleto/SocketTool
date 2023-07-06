@@ -30,12 +30,15 @@
         {
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
-            listView1 = new ListView();
+            LVProcesses = new ListView();
             clPID = new ColumnHeader();
             clName = new ColumnHeader();
             clDescription = new ColumnHeader();
             clSize = new ColumnHeader();
             btnLoadProcesses = new Button();
+            radioButton1 = new RadioButton();
+            radioButton2 = new RadioButton();
+            radioButton3 = new RadioButton();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             SuspendLayout();
@@ -51,7 +54,7 @@
             // 
             // tabPage1
             // 
-            tabPage1.Controls.Add(listView1);
+            tabPage1.Controls.Add(LVProcesses);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
@@ -60,15 +63,15 @@
             tabPage1.Text = "Processes";
             tabPage1.UseVisualStyleBackColor = true;
             // 
-            // listView1
+            // LVProcesses
             // 
-            listView1.Columns.AddRange(new ColumnHeader[] { clPID, clName, clDescription, clSize });
-            listView1.Location = new Point(6, 6);
-            listView1.Name = "listView1";
-            listView1.Size = new Size(476, 441);
-            listView1.TabIndex = 0;
-            listView1.UseCompatibleStateImageBehavior = false;
-            listView1.View = View.List;
+            LVProcesses.Columns.AddRange(new ColumnHeader[] { clPID, clName, clDescription, clSize });
+            LVProcesses.Location = new Point(3, 3);
+            LVProcesses.Name = "LVProcesses";
+            LVProcesses.Size = new Size(479, 447);
+            LVProcesses.TabIndex = 0;
+            LVProcesses.UseCompatibleStateImageBehavior = false;
+            LVProcesses.View = View.Details;
             // 
             // clPID
             // 
@@ -83,7 +86,7 @@
             // clDescription
             // 
             clDescription.Text = "Description";
-            clDescription.Width = 180;
+            clDescription.Width = 150;
             // 
             // clSize
             // 
@@ -98,13 +101,52 @@
             btnLoadProcesses.TabIndex = 1;
             btnLoadProcesses.Text = "Load";
             btnLoadProcesses.UseVisualStyleBackColor = true;
-            btnLoadProcesses.Click += btnLoadProcesses_Click;
+            btnLoadProcesses.Click += BtnLoadProcesses_Click;
+            // 
+            // radioButton1
+            // 
+            radioButton1.AutoSize = true;
+            radioButton1.Location = new Point(19, 495);
+            radioButton1.Name = "radioButton1";
+            radioButton1.Size = new Size(60, 19);
+            radioButton1.TabIndex = 2;
+            radioButton1.TabStop = true;
+            radioButton1.Text = "Details";
+            radioButton1.UseVisualStyleBackColor = true;
+            radioButton1.Click += radioButton1_Click;
+            // 
+            // radioButton2
+            // 
+            radioButton2.AutoSize = true;
+            radioButton2.Location = new Point(107, 495);
+            radioButton2.Name = "radioButton2";
+            radioButton2.Size = new Size(80, 19);
+            radioButton2.TabIndex = 3;
+            radioButton2.TabStop = true;
+            radioButton2.Text = "Large Icon";
+            radioButton2.UseVisualStyleBackColor = true;
+            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            // 
+            // radioButton3
+            // 
+            radioButton3.AutoSize = true;
+            radioButton3.Location = new Point(219, 495);
+            radioButton3.Name = "radioButton3";
+            radioButton3.Size = new Size(43, 19);
+            radioButton3.TabIndex = 4;
+            radioButton3.TabStop = true;
+            radioButton3.Text = "List";
+            radioButton3.UseVisualStyleBackColor = true;
+            radioButton3.CheckedChanged += radioButton3_CheckedChanged;
             // 
             // FrmProcesses
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(517, 500);
+            ClientSize = new Size(517, 542);
+            Controls.Add(radioButton3);
+            Controls.Add(radioButton2);
+            Controls.Add(radioButton1);
             Controls.Add(btnLoadProcesses);
             Controls.Add(tabControl1);
             Name = "FrmProcesses";
@@ -113,17 +155,21 @@
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private TabControl tabControl1;
         private TabPage tabPage1;
-        private ListView listView1;
+        private ListView LVProcesses;
         private ColumnHeader clPID;
         private ColumnHeader clName;
         private ColumnHeader clDescription;
         private ColumnHeader clSize;
         private Button btnLoadProcesses;
+        private RadioButton radioButton1;
+        private RadioButton radioButton2;
+        private RadioButton radioButton3;
     }
 }
