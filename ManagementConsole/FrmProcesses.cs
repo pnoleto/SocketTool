@@ -33,9 +33,14 @@ namespace ManagementConsole
             byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
 
             var processes = JsonConvert.DeserializeObject<List<ProcessInfo>>(Encoding.UTF8.GetString(buffer));
-            
+
             processes?.ForEach(process => LVProcesses.Items.Add(
-               new ListViewItem(new string[] { process.Pid.ToString(), process.Name, process.Description, MyExtension.ToSize(process.Size, MyExtension.SizeUnits.KB).ToString() })));
+               new ListViewItem(new string[] {
+                   process.Pid.ToString(),
+                   process.Name,
+                   process.Description,
+                   MyExtension.ToSize(process.Size, MyExtension.SizeUnits.KB).ToString()
+               })));
         }
 
         private void BtnLoadProcesses_Click(object sender, EventArgs e)
@@ -43,17 +48,17 @@ namespace ManagementConsole
             LoadProcesses();
         }
 
-        private void radioButton1_Click(object sender, EventArgs e)
+        private void RadioButton1_Click(object sender, EventArgs e)
         {
             LVProcesses.View = View.Details;
         }
 
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        private void RadioButton2_CheckedChanged(object sender, EventArgs e)
         {
             LVProcesses.View = View.LargeIcon;
         }
 
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        private void RadioButton3_CheckedChanged(object sender, EventArgs e)
         {
             LVProcesses.View = View.List;
         }

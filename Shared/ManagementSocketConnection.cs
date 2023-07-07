@@ -116,7 +116,7 @@ namespace Shared
             {
                 long sent = 0;
 
-                using MemoryStream stream = new();
+                var stream = new NetworkStream(webSocket);
 
                 cancellationToken.ThrowIfCancellationRequested();
 

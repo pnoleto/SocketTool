@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Shared;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
+using System;
 
 namespace ManagementConsole
 {
@@ -33,7 +35,7 @@ namespace ManagementConsole
                 path.Name,
                     path.Type,
                     path.Path,
-                    MyExtension.ToSize(path.Size, MyExtension.SizeUnits.KB)
+                    path.Size.ToString()
                 })));
         }
 
@@ -54,19 +56,58 @@ namespace ManagementConsole
             TxtPath.Text = LVFilesAndDirectories.SelectedItems[0]?.SubItems[2]?.Text;
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        private void RadioButton1_CheckedChanged(object sender, EventArgs e)
         {
             LVFilesAndDirectories.View = View.Details;
         }
 
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        private void RadioButton2_CheckedChanged(object sender, EventArgs e)
         {
             LVFilesAndDirectories.View = View.LargeIcon;
         }
 
-        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        private void RadioButton3_CheckedChanged(object sender, EventArgs e)
         {
             LVFilesAndDirectories.View = View.List;
+        }
+
+        private async void DownloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
+
+            string command = Types.SocketCommand(SocketCommands.DownLoadFile);
+
+            string filePath = item.SubItems[2].Text;
+
+            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, filePath })), _cancellationToken);
+
+            using FileStream fileStream = new($"./{new FileInfo(filePath).Name}", FileMode.Append, FileAccess.Write);
+
+            byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+
+            await fileStream.WriteAsync(buffer);
+
+            fileStream.Close();
+
+            MessageBox.Show("Arquivo salvo com sucesso!");
+        }
+
+        private async void UploadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string command = Types.SocketCommand(SocketCommands.UploadFile);
+
+            using OpenFileDialog openFileDialogToUpload = new();
+
+            openFileDialogToUpload.ShowDialog();
+
+            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(
+                string.Join("", new[] { command, new FileInfo(openFileDialogToUpload.FileName).Name })), _cancellationToken);
+
+            byte[] buffer = File.ReadAllBytes(openFileDialogToUpload.FileName);
+
+            await ManagementSocketConnection.SocketWriterAsync(_socket, buffer, _cancellationToken);
+
+            MessageBox.Show("Arquivo salvo com sucesso!");
         }
     }
 }

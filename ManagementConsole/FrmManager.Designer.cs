@@ -28,27 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             LVFilesAndDirectories = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
             columnHeader3 = new ColumnHeader();
             columnHeader4 = new ColumnHeader();
+            ctxMenu = new ContextMenuStrip(components);
+            uploadToolStripMenuItem = new ToolStripMenuItem();
+            downloadToolStripMenuItem = new ToolStripMenuItem();
             BtnLoad = new Button();
             TxtPath = new TextBox();
             radioButton3 = new RadioButton();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
+            ctxMenu.SuspendLayout();
             SuspendLayout();
             // 
             // LVFilesAndDirectories
             // 
             LVFilesAndDirectories.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
+            LVFilesAndDirectories.ContextMenuStrip = ctxMenu;
             LVFilesAndDirectories.Location = new Point(12, 37);
             LVFilesAndDirectories.Name = "LVFilesAndDirectories";
             LVFilesAndDirectories.Size = new Size(532, 426);
             LVFilesAndDirectories.TabIndex = 0;
             LVFilesAndDirectories.UseCompatibleStateImageBehavior = false;
-            LVFilesAndDirectories.View = View.List;
+            LVFilesAndDirectories.View = View.Details;
             LVFilesAndDirectories.MouseClick += ListView1_MouseClick;
             // 
             // columnHeader1
@@ -69,6 +75,26 @@
             // columnHeader4
             // 
             columnHeader4.Text = "Size";
+            // 
+            // ctxMenu
+            // 
+            ctxMenu.Items.AddRange(new ToolStripItem[] { uploadToolStripMenuItem, downloadToolStripMenuItem });
+            ctxMenu.Name = "ctxMenu";
+            ctxMenu.Size = new Size(129, 48);
+            // 
+            // uploadToolStripMenuItem
+            // 
+            uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
+            uploadToolStripMenuItem.Size = new Size(128, 22);
+            uploadToolStripMenuItem.Text = "Upload";
+            uploadToolStripMenuItem.Click += UploadToolStripMenuItem_Click;
+            // 
+            // downloadToolStripMenuItem
+            // 
+            downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
+            downloadToolStripMenuItem.Size = new Size(128, 22);
+            downloadToolStripMenuItem.Text = "Download";
+            downloadToolStripMenuItem.Click += DownloadToolStripMenuItem_Click;
             // 
             // BtnLoad
             // 
@@ -98,7 +124,7 @@
             radioButton3.TabStop = true;
             radioButton3.Text = "List";
             radioButton3.UseVisualStyleBackColor = true;
-            radioButton3.CheckedChanged += radioButton3_CheckedChanged;
+            radioButton3.CheckedChanged += RadioButton3_CheckedChanged;
             // 
             // radioButton2
             // 
@@ -110,7 +136,7 @@
             radioButton2.TabStop = true;
             radioButton2.Text = "Large Icon";
             radioButton2.UseVisualStyleBackColor = true;
-            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            radioButton2.CheckedChanged += RadioButton2_CheckedChanged;
             // 
             // radioButton1
             // 
@@ -122,7 +148,7 @@
             radioButton1.TabStop = true;
             radioButton1.Text = "Details";
             radioButton1.UseVisualStyleBackColor = true;
-            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            radioButton1.CheckedChanged += RadioButton1_CheckedChanged;
             // 
             // FrmManager
             // 
@@ -136,6 +162,7 @@
             Controls.Add(BtnLoad);
             Controls.Add(LVFilesAndDirectories);
             Name = "FrmManager";
+            ctxMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -152,5 +179,8 @@
         private RadioButton radioButton3;
         private RadioButton radioButton2;
         private RadioButton radioButton1;
+        private ContextMenuStrip ctxMenu;
+        private ToolStripMenuItem uploadToolStripMenuItem;
+        private ToolStripMenuItem downloadToolStripMenuItem;
     }
 }
