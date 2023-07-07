@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Shared;
-using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System;
 
 namespace ManagementConsole
 {
@@ -20,30 +18,25 @@ namespace ManagementConsole
 
         public async void LoadPath(string path)
         {
-            LVFilesAndDirectories.Items.Clear();
-
-            string command = Types.SocketCommand(SocketCommands.ExplorePath);
-
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
-
-            byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
-
-            var paths = JsonConvert.DeserializeObject<List<ItemType>>(Encoding.UTF8.GetString(buffer));
-
-            paths?.ForEach(path => LVFilesAndDirectories.Items.Add(
-                new ListViewItem(new[] {
-                path.Name,
-                    path.Type,
-                    path.Path,
-                    path.Size.ToString()
-                })));
-        }
-
-        private void BtnLoad_Click(object sender, EventArgs e)
-        {
             try
             {
-                LoadPath(TxtPath.Text);
+                LVFilesAndDirectories.Items.Clear();
+
+                string command = Types.SocketCommand(SocketCommands.ExplorePath);
+
+                await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
+
+                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+
+                List<ItemType>? paths = JsonConvert.DeserializeObject<List<ItemType>>(Encoding.UTF8.GetString(buffer));
+
+                paths?.ForEach(path => LVFilesAndDirectories.Items.Add(
+                    new ListViewItem(new[] {
+                        path.Name,
+                        path.Type,
+                        path.Path,
+                        path.Size.ToString()
+                    })));
             }
             catch (Exception ex)
             {
@@ -51,9 +44,21 @@ namespace ManagementConsole
             }
         }
 
+        private void BtnLoad_Click(object sender, EventArgs e)
+        {
+            LoadPath(TxtPath.Text);
+        }
+
         private void ListView1_MouseClick(object sender, MouseEventArgs e)
         {
-            TxtPath.Text = LVFilesAndDirectories.SelectedItems[0]?.SubItems[2]?.Text;
+            ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
+            
+            if (item.SubItems[1].Text.Equals("Directory"))
+            {
+                TxtPath.Text = item.SubItems[2].Text;
+                LoadPath(TxtPath.Text);
+            };
+
         }
 
         private void RadioButton1_CheckedChanged(object sender, EventArgs e)
@@ -73,41 +78,56 @@ namespace ManagementConsole
 
         private async void DownloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
+            try
+            {
+                ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
 
-            string command = Types.SocketCommand(SocketCommands.DownLoadFile);
+                string command = Types.SocketCommand(SocketCommands.DownLoadFile);
 
-            string filePath = item.SubItems[2].Text;
+                string filePath = item.SubItems[2].Text;
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, filePath })), _cancellationToken);
+                await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(
+                    string.Join("", new[] { command, filePath })), _cancellationToken);
 
-            using FileStream fileStream = new($"./{new FileInfo(filePath).Name}", FileMode.Append, FileAccess.Write);
+                using FileStream fileStream = new($"./{new FileInfo(filePath).Name}", FileMode.Append, FileAccess.Write);
 
-            byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
 
-            await fileStream.WriteAsync(buffer);
+                await fileStream.WriteAsync(buffer);
 
-            fileStream.Close();
+                fileStream.Close();
 
-            MessageBox.Show("Arquivo salvo com sucesso!");
+                MessageBox.Show("Arquivo salvo com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void UploadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string command = Types.SocketCommand(SocketCommands.UploadFile);
+            try
+            {
+                string command = Types.SocketCommand(SocketCommands.UploadFile);
 
-            using OpenFileDialog openFileDialogToUpload = new();
+                using OpenFileDialog openFileDialogToUpload = new();
 
-            openFileDialogToUpload.ShowDialog();
+                openFileDialogToUpload.ShowDialog();
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(
-                string.Join("", new[] { command, new FileInfo(openFileDialogToUpload.FileName).Name })), _cancellationToken);
+                await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(
+                    string.Join("", new[] { command, new FileInfo(openFileDialogToUpload.FileName).Name })), _cancellationToken);
 
-            byte[] buffer = File.ReadAllBytes(openFileDialogToUpload.FileName);
+                byte[] buffer = File.ReadAllBytes(openFileDialogToUpload.FileName);
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, buffer, _cancellationToken);
+                await ManagementSocketConnection.SocketWriterAsync(_socket, buffer, _cancellationToken);
 
-            MessageBox.Show("Arquivo salvo com sucesso!");
+                MessageBox.Show("Arquivo salvo com sucesso!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
