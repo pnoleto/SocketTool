@@ -48,8 +48,7 @@ namespace ManagementConsole
                 new string[] {
                     socket.Handle.ToString(),
                     socket.RemoteEndPoint.ToString(),
-                    "OS"
-                }));
+                    "OS"}));
         }
 
         private void AddConnectionInTheTaskList(Socket socket)

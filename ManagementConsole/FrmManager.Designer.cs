@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmManager));
             LVFilesAndDirectories = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
@@ -37,25 +38,30 @@
             ctxMenu = new ContextMenuStrip(components);
             uploadToolStripMenuItem = new ToolStripMenuItem();
             downloadToolStripMenuItem = new ToolStripMenuItem();
+            imgList = new ImageList(components);
             BtnLoad = new Button();
             TxtPath = new TextBox();
             radioButton3 = new RadioButton();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
+            progressBarStreams = new ProgressBar();
+            execFileToolStripMenuItem = new ToolStripMenuItem();
             ctxMenu.SuspendLayout();
             SuspendLayout();
             // 
             // LVFilesAndDirectories
             // 
+            LVFilesAndDirectories.AllowColumnReorder = true;
             LVFilesAndDirectories.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
             LVFilesAndDirectories.ContextMenuStrip = ctxMenu;
+            LVFilesAndDirectories.GroupImageList = imgList;
             LVFilesAndDirectories.Location = new Point(12, 37);
             LVFilesAndDirectories.Name = "LVFilesAndDirectories";
             LVFilesAndDirectories.Size = new Size(532, 426);
             LVFilesAndDirectories.TabIndex = 0;
             LVFilesAndDirectories.UseCompatibleStateImageBehavior = false;
             LVFilesAndDirectories.View = View.Details;
-            LVFilesAndDirectories.MouseClick += ListView1_MouseClick;
+            LVFilesAndDirectories.MouseDoubleClick += LVFilesAndDirectories_MouseDoubleClick;
             // 
             // columnHeader1
             // 
@@ -78,23 +84,31 @@
             // 
             // ctxMenu
             // 
-            ctxMenu.Items.AddRange(new ToolStripItem[] { uploadToolStripMenuItem, downloadToolStripMenuItem });
+            ctxMenu.Items.AddRange(new ToolStripItem[] { uploadToolStripMenuItem, downloadToolStripMenuItem, execFileToolStripMenuItem });
             ctxMenu.Name = "ctxMenu";
-            ctxMenu.Size = new Size(129, 48);
+            ctxMenu.Size = new Size(181, 92);
             // 
             // uploadToolStripMenuItem
             // 
             uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
-            uploadToolStripMenuItem.Size = new Size(128, 22);
+            uploadToolStripMenuItem.Size = new Size(180, 22);
             uploadToolStripMenuItem.Text = "Upload";
             uploadToolStripMenuItem.Click += UploadToolStripMenuItem_Click;
             // 
             // downloadToolStripMenuItem
             // 
             downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-            downloadToolStripMenuItem.Size = new Size(128, 22);
+            downloadToolStripMenuItem.Size = new Size(180, 22);
             downloadToolStripMenuItem.Text = "Download";
             downloadToolStripMenuItem.Click += DownloadToolStripMenuItem_Click;
+            // 
+            // imgList
+            // 
+            imgList.ColorDepth = ColorDepth.Depth8Bit;
+            imgList.ImageStream = (ImageListStreamer)resources.GetObject("imgList.ImageStream");
+            imgList.TransparentColor = Color.Transparent;
+            imgList.Images.SetKeyName(0, "file.png");
+            imgList.Images.SetKeyName(1, "archive.jpg");
             // 
             // BtnLoad
             // 
@@ -121,7 +135,6 @@
             radioButton3.Name = "radioButton3";
             radioButton3.Size = new Size(43, 19);
             radioButton3.TabIndex = 7;
-            radioButton3.TabStop = true;
             radioButton3.Text = "List";
             radioButton3.UseVisualStyleBackColor = true;
             radioButton3.CheckedChanged += RadioButton3_CheckedChanged;
@@ -133,7 +146,6 @@
             radioButton2.Name = "radioButton2";
             radioButton2.Size = new Size(80, 19);
             radioButton2.TabIndex = 6;
-            radioButton2.TabStop = true;
             radioButton2.Text = "Large Icon";
             radioButton2.UseVisualStyleBackColor = true;
             radioButton2.CheckedChanged += RadioButton2_CheckedChanged;
@@ -141,6 +153,7 @@
             // radioButton1
             // 
             radioButton1.AutoSize = true;
+            radioButton1.Checked = true;
             radioButton1.Location = new Point(12, 469);
             radioButton1.Name = "radioButton1";
             radioButton1.Size = new Size(60, 19);
@@ -150,11 +163,26 @@
             radioButton1.UseVisualStyleBackColor = true;
             radioButton1.CheckedChanged += RadioButton1_CheckedChanged;
             // 
+            // progressBarStreams
+            // 
+            progressBarStreams.Location = new Point(387, 469);
+            progressBarStreams.Name = "progressBarStreams";
+            progressBarStreams.Size = new Size(156, 23);
+            progressBarStreams.TabIndex = 8;
+            // 
+            // execFileToolStripMenuItem
+            // 
+            execFileToolStripMenuItem.Name = "execFileToolStripMenuItem";
+            execFileToolStripMenuItem.Size = new Size(180, 22);
+            execFileToolStripMenuItem.Text = "Exec File";
+            execFileToolStripMenuItem.Click += ExecFileToolStripMenuItem_Click;
+            // 
             // FrmManager
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(555, 516);
+            Controls.Add(progressBarStreams);
             Controls.Add(radioButton3);
             Controls.Add(radioButton2);
             Controls.Add(radioButton1);
@@ -182,5 +210,8 @@
         private ContextMenuStrip ctxMenu;
         private ToolStripMenuItem uploadToolStripMenuItem;
         private ToolStripMenuItem downloadToolStripMenuItem;
+        private ProgressBar progressBarStreams;
+        private ImageList imgList;
+        private ToolStripMenuItem execFileToolStripMenuItem;
     }
 }

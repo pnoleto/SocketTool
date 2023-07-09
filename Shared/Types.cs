@@ -1,9 +1,24 @@
 ﻿
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 
 namespace Shared
 {
-    public static class MyExtension
+    public enum SocketCommands
+    {
+        NotifyMessage,
+        ExplorePath,
+        UploadFile,
+        DownLoadFile,
+        NotifyShellCommand,
+        NotifyOSInformations,
+        RemoteShutdown,
+        PingTarget,
+        ExecFile,
+        GetProcesses,
+        KillProcess
+    }
+    public static class BytesCalculator
     {
         public enum SizeUnits
         {
@@ -17,20 +32,19 @@ namespace Shared
 
         private static string Symbol(SizeUnits sizeUnits)
         {
-            switch (sizeUnits)
+            return sizeUnits switch
             {
-                case SizeUnits.Byte: return "bytes";
-                case SizeUnits.KB: return "KB";
-                case SizeUnits.MB: return "MB";
-                case SizeUnits.GB: return "GB";
-                case SizeUnits.TB: return "TB";
-                case SizeUnits.PB: return "PB";
-                case SizeUnits.EB: return "EB";
-                case SizeUnits.ZB: return "ZB";
-                case SizeUnits.YB: return "YB";
-                default: return "";
-            }
-
+                SizeUnits.Byte => "bytes",
+                SizeUnits.KB => "KB",
+                SizeUnits.MB => "MB",
+                SizeUnits.GB => "GB",
+                SizeUnits.TB => "TB",
+                SizeUnits.PB => "PB",
+                SizeUnits.EB => "EB",
+                SizeUnits.ZB => "ZB",
+                SizeUnits.YB => "YB",
+                _ => "",
+            };
         }
     }
     public class SocketItem
@@ -89,7 +103,7 @@ namespace Shared
     }
     public class Types
     {
-        public static readonly string EOS = "<END>";
+        public static readonly string EOF = "<END>";
 
         private static readonly IDictionary<SocketCommands, string> _listCommands = new Dictionary<SocketCommands, string>()
         {
@@ -102,9 +116,18 @@ namespace Shared
             {SocketCommands.RemoteShutdown, "<RemoteShutdown>" },
             {SocketCommands.PingTarget, "<PingTarget>" },
             {SocketCommands.ExecFile, "<ExecFile>" },
-            {SocketCommands.GetProcesses, "<GetProcesses>" }
+            {SocketCommands.GetProcesses, "<GetProcesses>" },
+            {SocketCommands.KillProcess, "<KillProcesses>"}
         };
 
         public static string SocketCommand(SocketCommands SocketCommand) => _listCommands[SocketCommand];
+    }
+
+    public static class ExtensionMethods
+    {
+        public static bool IsSocketCommmmand(this string value, SocketCommands socketCommand)
+        {
+            return value.IndexOf(Types.SocketCommand(socketCommand)) > -1;
+        }
     }
 }

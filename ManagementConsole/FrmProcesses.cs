@@ -10,6 +10,7 @@ namespace ManagementConsole
     {
         private readonly Socket _socket;
         private readonly CancellationToken _cancellationToken;
+        private FrmOSInformations _frmOSInformations;
         public FrmProcesses(Socket socket, CancellationToken cancellationToken)
         {
             InitializeComponent();
@@ -38,9 +39,7 @@ namespace ManagementConsole
                new ListViewItem(new string[] {
                    process.Pid.ToString(),
                    process.Name,
-                   process.Description,
-                   MyExtension.ToSize(process.Size, MyExtension.SizeUnits.KB).ToString()
-               })));
+                   process.Description })));
         }
 
         private void BtnLoadProcesses_Click(object sender, EventArgs e)
@@ -61,6 +60,25 @@ namespace ManagementConsole
         private void RadioButton3_CheckedChanged(object sender, EventArgs e)
         {
             LVProcesses.View = View.List;
+        }
+
+        private async void KillProcesssToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ListViewItem item = LVProcesses.SelectedItems[0];
+
+            string processId = item.SubItems[0].Text;
+
+            string command = Types.SocketCommand(SocketCommands.KillProcess);
+
+            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, processId })), _cancellationToken);
+
+            LoadProcesses();
+        }
+
+        private void btnOSInformations_Click(object sender, EventArgs e)
+        {
+            _frmOSInformations = new FrmOSInformations(_socket, _cancellationToken);
+            _frmOSInformations.ShowDialog();
         }
     }
 }

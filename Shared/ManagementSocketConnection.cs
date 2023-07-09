@@ -3,19 +3,6 @@ using System.Net;
 
 namespace Shared
 {
-    public enum SocketCommands
-    {
-        NotifyMessage,
-        ExplorePath,
-        UploadFile,
-        DownLoadFile,
-        NotifyShellCommand,
-        NotifyOSInformations,
-        RemoteShutdown,
-        PingTarget,
-        ExecFile,
-        GetProcesses
-    }
     public class ManagementSocketConnection
     {
         public ManagementSocketConnection() { }
@@ -115,8 +102,6 @@ namespace Shared
             return Task.Run(async () =>
             {
                 long sent = 0;
-
-                var stream = new NetworkStream(webSocket);
 
                 cancellationToken.ThrowIfCancellationRequested();
 

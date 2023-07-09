@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             btnLoadProcesses = new Button();
             radioButton1 = new RadioButton();
             radioButton2 = new RadioButton();
@@ -37,6 +38,10 @@
             clName = new ColumnHeader();
             clDescription = new ColumnHeader();
             clSize = new ColumnHeader();
+            ctxMenu = new ContextMenuStrip(components);
+            killProcesssToolStripMenuItem = new ToolStripMenuItem();
+            btnOSInformations = new Button();
+            ctxMenu.SuspendLayout();
             SuspendLayout();
             // 
             // btnLoadProcesses
@@ -52,6 +57,7 @@
             // radioButton1
             // 
             radioButton1.AutoSize = true;
+            radioButton1.Checked = true;
             radioButton1.Location = new Point(12, 468);
             radioButton1.Name = "radioButton1";
             radioButton1.Size = new Size(60, 19);
@@ -68,7 +74,6 @@
             radioButton2.Name = "radioButton2";
             radioButton2.Size = new Size(80, 19);
             radioButton2.TabIndex = 3;
-            radioButton2.TabStop = true;
             radioButton2.Text = "Large Icon";
             radioButton2.UseVisualStyleBackColor = true;
             radioButton2.CheckedChanged += RadioButton2_CheckedChanged;
@@ -80,14 +85,16 @@
             radioButton3.Name = "radioButton3";
             radioButton3.Size = new Size(43, 19);
             radioButton3.TabIndex = 4;
-            radioButton3.TabStop = true;
             radioButton3.Text = "List";
             radioButton3.UseVisualStyleBackColor = true;
             radioButton3.CheckedChanged += RadioButton3_CheckedChanged;
             // 
             // LVProcesses
             // 
+            LVProcesses.AllowColumnReorder = true;
             LVProcesses.Columns.AddRange(new ColumnHeader[] { clPID, clName, clDescription, clSize });
+            LVProcesses.ContextMenuStrip = ctxMenu;
+            LVProcesses.FullRowSelect = true;
             LVProcesses.Location = new Point(12, 36);
             LVProcesses.Name = "LVProcesses";
             LVProcesses.Size = new Size(532, 426);
@@ -115,11 +122,35 @@
             clSize.Text = "Size";
             clSize.Width = 100;
             // 
+            // ctxMenu
+            // 
+            ctxMenu.Items.AddRange(new ToolStripItem[] { killProcesssToolStripMenuItem });
+            ctxMenu.Name = "ctxMenu";
+            ctxMenu.Size = new Size(181, 48);
+            // 
+            // killProcesssToolStripMenuItem
+            // 
+            killProcesssToolStripMenuItem.Name = "killProcesssToolStripMenuItem";
+            killProcesssToolStripMenuItem.Size = new Size(180, 22);
+            killProcesssToolStripMenuItem.Text = "Kill Processs";
+            killProcesssToolStripMenuItem.Click += KillProcesssToolStripMenuItem_Click;
+            // 
+            // btnOSInformations
+            // 
+            btnOSInformations.Location = new Point(469, 7);
+            btnOSInformations.Name = "btnOSInformations";
+            btnOSInformations.Size = new Size(75, 23);
+            btnOSInformations.TabIndex = 6;
+            btnOSInformations.Text = "OS";
+            btnOSInformations.UseVisualStyleBackColor = true;
+            btnOSInformations.Click += btnOSInformations_Click;
+            // 
             // FrmProcesses
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(555, 516);
+            Controls.Add(btnOSInformations);
             Controls.Add(LVProcesses);
             Controls.Add(radioButton3);
             Controls.Add(radioButton2);
@@ -128,6 +159,7 @@
             Name = "FrmProcesses";
             Text = "FrmProcesses";
             Load += FrmProcesses_Load;
+            ctxMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -142,5 +174,8 @@
         private ColumnHeader clName;
         private ColumnHeader clDescription;
         private ColumnHeader clSize;
+        private ContextMenuStrip ctxMenu;
+        private ToolStripMenuItem killProcesssToolStripMenuItem;
+        private Button btnOSInformations;
     }
 }
