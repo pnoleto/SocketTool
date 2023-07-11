@@ -38,6 +38,7 @@
             ctxMenu = new ContextMenuStrip(components);
             uploadToolStripMenuItem = new ToolStripMenuItem();
             downloadToolStripMenuItem = new ToolStripMenuItem();
+            execFileToolStripMenuItem = new ToolStripMenuItem();
             imgList = new ImageList(components);
             BtnLoad = new Button();
             TxtPath = new TextBox();
@@ -45,7 +46,6 @@
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
             progressBarStreams = new ProgressBar();
-            execFileToolStripMenuItem = new ToolStripMenuItem();
             ctxMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -55,9 +55,11 @@
             LVFilesAndDirectories.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3, columnHeader4 });
             LVFilesAndDirectories.ContextMenuStrip = ctxMenu;
             LVFilesAndDirectories.GroupImageList = imgList;
+            LVFilesAndDirectories.LargeImageList = imgList;
             LVFilesAndDirectories.Location = new Point(12, 37);
             LVFilesAndDirectories.Name = "LVFilesAndDirectories";
             LVFilesAndDirectories.Size = new Size(532, 426);
+            LVFilesAndDirectories.SmallImageList = imgList;
             LVFilesAndDirectories.TabIndex = 0;
             LVFilesAndDirectories.UseCompatibleStateImageBehavior = false;
             LVFilesAndDirectories.View = View.Details;
@@ -86,21 +88,28 @@
             // 
             ctxMenu.Items.AddRange(new ToolStripItem[] { uploadToolStripMenuItem, downloadToolStripMenuItem, execFileToolStripMenuItem });
             ctxMenu.Name = "ctxMenu";
-            ctxMenu.Size = new Size(181, 92);
+            ctxMenu.Size = new Size(129, 70);
             // 
             // uploadToolStripMenuItem
             // 
             uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
-            uploadToolStripMenuItem.Size = new Size(180, 22);
+            uploadToolStripMenuItem.Size = new Size(128, 22);
             uploadToolStripMenuItem.Text = "Upload";
             uploadToolStripMenuItem.Click += UploadToolStripMenuItem_Click;
             // 
             // downloadToolStripMenuItem
             // 
             downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
-            downloadToolStripMenuItem.Size = new Size(180, 22);
+            downloadToolStripMenuItem.Size = new Size(128, 22);
             downloadToolStripMenuItem.Text = "Download";
             downloadToolStripMenuItem.Click += DownloadToolStripMenuItem_Click;
+            // 
+            // execFileToolStripMenuItem
+            // 
+            execFileToolStripMenuItem.Name = "execFileToolStripMenuItem";
+            execFileToolStripMenuItem.Size = new Size(128, 22);
+            execFileToolStripMenuItem.Text = "Exec File";
+            execFileToolStripMenuItem.Click += ExecFileToolStripMenuItem_Click;
             // 
             // imgList
             // 
@@ -169,13 +178,6 @@
             progressBarStreams.Name = "progressBarStreams";
             progressBarStreams.Size = new Size(156, 23);
             progressBarStreams.TabIndex = 8;
-            // 
-            // execFileToolStripMenuItem
-            // 
-            execFileToolStripMenuItem.Name = "execFileToolStripMenuItem";
-            execFileToolStripMenuItem.Size = new Size(180, 22);
-            execFileToolStripMenuItem.Text = "Exec File";
-            execFileToolStripMenuItem.Click += ExecFileToolStripMenuItem_Click;
             // 
             // FrmManager
             // 

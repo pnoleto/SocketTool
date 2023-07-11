@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ManagementConsole
 {
-   public partial class FrmOSInformations : Form
+    public partial class FrmOSInformations : Form
     {
         private readonly Socket _socket;
         private readonly CancellationToken _cancellationToken;

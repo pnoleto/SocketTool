@@ -50,9 +50,8 @@ namespace ManagementConsole
         {
             return type switch
             {
-                "File" => 0,
                 "Directory" => 1,
-                _ => -1,
+                _ => 0,
             };
         }
 
@@ -76,22 +75,13 @@ namespace ManagementConsole
             LVFilesAndDirectories.View = View.List;
         }
 
-        private void UpdateProgress(long progress)
-        {
-            progressBarStreams.Value = (int)progress;
-        }
-
-        private void ResetProgress()
-        {
-            progressBarStreams.Value = 0;
-            progressBarStreams.Maximum = 100;
-        }
-
         private async void DownloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
                 ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
+
+                if (item.SubItems[1].Text.Equals("Directory")) return;
 
                 string filePath = item.SubItems[2].Text;
 
@@ -155,16 +145,17 @@ namespace ManagementConsole
         {
             ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
 
-            if (item.SubItems[1].Text.Equals("Directory"))
-            {
-                TxtPath.Text = item.SubItems[2].Text;
-                LoadPath(TxtPath.Text);
-            };
+            if (!item.SubItems[1].Text.Equals("Directory")) return;
+
+            TxtPath.Text = item.SubItems[2].Text;
+            LoadPath(TxtPath.Text);
         }
 
         private async void ExecFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ListViewItem item = LVFilesAndDirectories.SelectedItems[0];
+
+            if (item.SubItems[1].Text.Equals("Directory")) return;
 
             string filePath = item.SubItems[2].Text;
 

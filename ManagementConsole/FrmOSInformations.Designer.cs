@@ -41,7 +41,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(32, 37);
+            label1.Location = new Point(49, 14);
             label1.Name = "label1";
             label1.Size = new Size(25, 15);
             label1.TabIndex = 0;
@@ -50,7 +50,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(32, 71);
+            label2.Location = new Point(18, 48);
             label2.Name = "label2";
             label2.Size = new Size(56, 15);
             label2.TabIndex = 1;
@@ -59,7 +59,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(32, 112);
+            label3.Location = new Point(45, 89);
             label3.Name = "label3";
             label3.Size = new Size(29, 15);
             label3.TabIndex = 2;
@@ -68,7 +68,7 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(32, 148);
+            label4.Location = new Point(9, 125);
             label4.Name = "label4";
             label4.Size = new Size(65, 15);
             label4.TabIndex = 3;
@@ -77,7 +77,7 @@
             // txtOS
             // 
             txtOS.Enabled = false;
-            txtOS.Location = new Point(108, 29);
+            txtOS.Location = new Point(80, 11);
             txtOS.Name = "txtOS";
             txtOS.Size = new Size(315, 23);
             txtOS.TabIndex = 4;
@@ -85,7 +85,7 @@
             // txtMachine
             // 
             txtMachine.Enabled = false;
-            txtMachine.Location = new Point(108, 63);
+            txtMachine.Location = new Point(80, 45);
             txtMachine.Name = "txtMachine";
             txtMachine.Size = new Size(315, 23);
             txtMachine.TabIndex = 5;
@@ -93,7 +93,7 @@
             // TxtOSBits
             // 
             TxtOSBits.Enabled = false;
-            TxtOSBits.Location = new Point(108, 104);
+            TxtOSBits.Location = new Point(80, 86);
             TxtOSBits.Name = "TxtOSBits";
             TxtOSBits.Size = new Size(315, 23);
             TxtOSBits.TabIndex = 6;
@@ -101,7 +101,7 @@
             // OSUsername
             // 
             OSUsername.Enabled = false;
-            OSUsername.Location = new Point(108, 140);
+            OSUsername.Location = new Point(80, 122);
             OSUsername.Name = "OSUsername";
             OSUsername.Size = new Size(315, 23);
             OSUsername.TabIndex = 7;
@@ -110,7 +110,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(444, 187);
+            ClientSize = new Size(411, 160);
             Controls.Add(OSUsername);
             Controls.Add(TxtOSBits);
             Controls.Add(txtMachine);

