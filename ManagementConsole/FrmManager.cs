@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shared;
-using System.IO;
 using System.Net.Sockets;
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace ManagementConsole
@@ -14,6 +12,7 @@ namespace ManagementConsole
         public FrmManager(Socket socket, CancellationToken cancellationToken)
         {
             InitializeComponent();
+
             _socket = socket;
             _cancellationToken = cancellationToken;
         }
@@ -26,9 +25,9 @@ namespace ManagementConsole
 
                 string command = Types.SocketCommand(SocketCommands.ExplorePath);
 
-                await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
+                await SoocketManager.SocketManager.SocketSendAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, path })), _cancellationToken);
 
-                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+                byte[] buffer = await SoocketManager.SocketManager.SocketReceiveAsync(_socket, _cancellationToken);
 
                 List<ItemType>? paths = JsonConvert.DeserializeObject<List<ItemType>>(Encoding.UTF8.GetString(buffer));
 
@@ -97,10 +96,10 @@ namespace ManagementConsole
 
                 if (openFileDialogToDownload.ShowDialog() == DialogResult.Cancel) return;
 
-                await ManagementSocketConnection.SocketWriterAsync(_socket,
+                await SoocketManager.SocketManager.SocketSendAsync(_socket,
                     Encoding.UTF8.GetBytes(string.Join("", new[] { command, filePath })), _cancellationToken);
 
-                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+                byte[] buffer = await SoocketManager.SocketManager.SocketReceiveAsync(_socket, _cancellationToken);
 
                 using FileStream fileStream = new(openFileDialogToDownload.FileName, FileMode.Append, FileAccess.Write);
 
@@ -126,12 +125,12 @@ namespace ManagementConsole
 
                 if (openFileDialogToUpload.ShowDialog() == DialogResult.Cancel) return;
 
-                await ManagementSocketConnection.SocketWriterAsync(_socket,
+                await SoocketManager.SocketManager.SocketSendAsync(_socket,
                     Encoding.UTF8.GetBytes(string.Join("", new[] { command, new FileInfo(openFileDialogToUpload.FileName).Name })), _cancellationToken);
 
                 byte[] buffer = File.ReadAllBytes(openFileDialogToUpload.FileName);
 
-                await ManagementSocketConnection.SocketWriterAsync(_socket, buffer, _cancellationToken);
+                await SoocketManager.SocketManager.SocketSendAsync(_socket, buffer, _cancellationToken);
 
                 MessageBox.Show("Arquivo salvo com sucesso!");
             }
@@ -161,7 +160,12 @@ namespace ManagementConsole
 
             string command = Types.SocketCommand(SocketCommands.ExecFile);
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, filePath })), _cancellationToken);
+            await SoocketManager.SocketManager.SocketSendAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, filePath })), _cancellationToken);
+        }
+
+        private void FrmManager_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

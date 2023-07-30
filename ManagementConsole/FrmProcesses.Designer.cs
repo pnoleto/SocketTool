@@ -143,7 +143,7 @@
             btnOSInformations.TabIndex = 6;
             btnOSInformations.Text = "OS";
             btnOSInformations.UseVisualStyleBackColor = true;
-            btnOSInformations.Click += btnOSInformations_Click;
+            btnOSInformations.Click += BtnOSInformations_Click;
             // 
             // FrmProcesses
             // 

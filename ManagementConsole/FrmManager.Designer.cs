@@ -192,6 +192,7 @@
             Controls.Add(BtnLoad);
             Controls.Add(LVFilesAndDirectories);
             Name = "FrmManager";
+            Load += FrmManager_Load;
             ctxMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();

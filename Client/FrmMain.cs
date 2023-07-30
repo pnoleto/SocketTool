@@ -1,11 +1,9 @@
 using System.Net.Sockets;
 using System.Net;
-using Shared;
 using System.Text;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System;
-using System.Threading;
+using Shared;
 
 namespace Client
 {
@@ -21,7 +19,7 @@ namespace Client
 
             _endpoint = new IPEndPoint(new IPAddress(new byte[] { 127, 0, 0, 1 }), 3030);
 
-            clientSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            clientSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
             {
                 ReceiveTimeout = 30,
                 SendTimeout = 30,
@@ -33,10 +31,11 @@ namespace Client
 
         public void StartPoolingConnection()
         {
-            ManagementSocketConnection.ConnectionPoolingAsync(
+            SoocketManager.SocketManager.ConnectAsync(
                 clientSocket,
                 _endpoint,
-                new Progress<Socket>(NotifyConnection), _cancelationToken);
+                _cancelationToken,
+                new Progress<Socket>(NotifyConnection));
         }
 
         private void NotifyConnection(Socket socket)
@@ -54,10 +53,10 @@ namespace Client
             {
                 while (socket.Connected)
                 {
-                    if (ManagementSocketConnection.StreamAvaliable(socket))
+                    if (SoocketManager.SocketManager.StreamAvaliable(socket))
                         try
                         {
-                            byte[] commandBuffer = await ManagementSocketConnection.SocketReaderAsync(socket, cancellationToken);
+                            byte[] commandBuffer = await SoocketManager.SocketManager.SocketReceiveAsync(socket, cancellationToken);
 
                             string cmd = Encoding.UTF8.GetString(commandBuffer);
 
@@ -131,7 +130,7 @@ namespace Client
 
                                 byte[] itemsBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(items));
 
-                                await ManagementSocketConnection.SocketWriterAsync(socket, itemsBuffer, cancellationToken);
+                                await SoocketManager.SocketManager.SocketSendAsync(socket, itemsBuffer, cancellationToken);
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.NotifyOSInformations))
@@ -144,7 +143,7 @@ namespace Client
 
                                 byte[] osInfoBuffer = commandBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(systemInfo));
 
-                                await ManagementSocketConnection.SocketWriterAsync(socket, osInfoBuffer, cancellationToken);
+                                await SoocketManager.SocketManager.SocketSendAsync(socket, osInfoBuffer, cancellationToken);
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.NotifyShellCommand))
@@ -178,6 +177,7 @@ namespace Client
                                 {
                                     StartInfo = startInfo
                                 };
+
                                 process.Start();
                             }
 
@@ -187,7 +187,7 @@ namespace Client
 
                                 using FileStream fileStream = new(receivedPath, FileMode.Append, FileAccess.Write);
 
-                                byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(socket, cancellationToken);
+                                byte[] buffer = await SoocketManager.SocketManager.SocketReceiveAsync(socket, cancellationToken);
 
                                 await fileStream.WriteAsync(buffer);
 
@@ -200,7 +200,7 @@ namespace Client
 
                                 byte[] buffer = File.ReadAllBytes(receivedPath);
 
-                                await ManagementSocketConnection.SocketWriterAsync(socket, buffer, cancellationToken);
+                                await SoocketManager.SocketManager.SocketSendAsync(socket, buffer, cancellationToken);
                             }
 
                             if (cmd.IsSocketCommmmand(SocketCommands.GetProcesses))
@@ -212,7 +212,7 @@ namespace Client
 
                                 byte[] processesBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(processes));
 
-                                await ManagementSocketConnection.SocketWriterAsync(socket, processesBuffer, cancellationToken);
+                                await SoocketManager.SocketManager.SocketSendAsync(socket, processesBuffer, cancellationToken);
                             }
                         }
                         catch (Exception ex)
@@ -221,6 +221,11 @@ namespace Client
                         }
                 }
             }, cancellationToken);
+        }
+
+        private void FrmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _cancelationToken = new CancellationToken(true);
         }
     }
 }

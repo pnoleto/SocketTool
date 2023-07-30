@@ -9,13 +9,15 @@ namespace ManagementConsole
     public partial class FrmProcesses : Form
     {
         private readonly Socket _socket;
+        private readonly FrmOSInformations _frmOSInformations;
         private readonly CancellationToken _cancellationToken;
-        private FrmOSInformations _frmOSInformations;
         public FrmProcesses(Socket socket, CancellationToken cancellationToken)
         {
             InitializeComponent();
+
             _socket = socket;
             _cancellationToken = cancellationToken;
+            _frmOSInformations = new FrmOSInformations(socket, _cancellationToken);
         }
 
         private void FrmProcesses_Load(object sender, EventArgs e)
@@ -29,9 +31,9 @@ namespace ManagementConsole
 
             string command = Types.SocketCommand(SocketCommands.GetProcesses);
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(command), _cancellationToken);
+            await SoocketManager.SocketManager.SocketSendAsync(_socket, Encoding.UTF8.GetBytes(command), _cancellationToken);
 
-            byte[] buffer = await ManagementSocketConnection.SocketReaderAsync(_socket, _cancellationToken);
+            byte[] buffer = await SoocketManager.SocketManager.SocketReceiveAsync(_socket, _cancellationToken);
 
             var processes = JsonConvert.DeserializeObject<List<ProcessInfo>>(Encoding.UTF8.GetString(buffer));
 
@@ -70,14 +72,13 @@ namespace ManagementConsole
 
             string command = Types.SocketCommand(SocketCommands.KillProcess);
 
-            await ManagementSocketConnection.SocketWriterAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, processId })), _cancellationToken);
+            await SoocketManager.SocketManager.SocketSendAsync(_socket, Encoding.UTF8.GetBytes(string.Join("", new[] { command, processId })), _cancellationToken);
 
             LoadProcesses();
         }
 
-        private void btnOSInformations_Click(object sender, EventArgs e)
+        private void BtnOSInformations_Click(object sender, EventArgs e)
         {
-            _frmOSInformations = new FrmOSInformations(_socket, _cancellationToken);
             _frmOSInformations.ShowDialog();
         }
     }

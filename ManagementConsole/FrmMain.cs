@@ -12,8 +12,8 @@ namespace ManagementConsole
         private CancellationToken _cancelationToken;
         private readonly IList<SocketItem> _connectionsList;
         private readonly IProgress<Socket> _notifyConnection;
-        private FrmManager? _FrmManager = null;
-        private FrmProcesses? _FrmProcesses = null;
+        private FrmManager? _FrmManager;
+        private FrmProcesses? _FrmProcesses;
         public FrmMain()
         {
             InitializeComponent();
@@ -24,7 +24,7 @@ namespace ManagementConsole
 
             _endpoint = new IPEndPoint(new IPAddress(new byte[] { 127, 0, 0, 1 }), 3030);
 
-            _webSocket = new Socket(_endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp)
+            _webSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
             {
                 ReceiveTimeout = 30,
                 SendTimeout = 30,
@@ -33,7 +33,6 @@ namespace ManagementConsole
             };
 
             _notifyConnection = new Progress<Socket>(NotifyAcceptedConnection);
-
         }
 
         private void NotifyAcceptedConnection(Socket socket)
@@ -61,7 +60,7 @@ namespace ManagementConsole
 
         public void StartListening()
         {
-            ManagementSocketConnection.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken);
+            SoocketManager.SocketManager.ConnectionListenerAsync(_webSocket, _endpoint, _notifyConnection, _cancelationToken);
         }
 
         private void BtnAtivar_Click(object sender, EventArgs e)
@@ -93,7 +92,7 @@ namespace ManagementConsole
             string message = string.Join("", new[] { Types.SocketCommand(SocketCommands.NotifyMessage), "Hello Word!" });
             byte[] buffer = Encoding.UTF8.GetBytes(message);
 
-            await ManagementSocketConnection.SocketWriterAsync(connectionItem.Socket, buffer, _cancelationToken);
+            await SoocketManager.SocketManager.SocketSendAsync(connectionItem.Socket, buffer, _cancelationToken);
         }
 
         private SocketItem GetSocketConnectionFromConnectionsList(string socketHandler)
@@ -122,6 +121,16 @@ namespace ManagementConsole
 
             _FrmProcesses = new FrmProcesses(connectionItem.Socket, _cancelationToken);
             _FrmProcesses.ShowDialog();
+        }
+
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FrmMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _cancelationToken = new CancellationToken(false);
         }
     }
 }

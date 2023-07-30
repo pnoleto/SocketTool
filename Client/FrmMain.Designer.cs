@@ -36,6 +36,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(248, 210);
             Name = "FrmMain";
+            FormClosed += FrmMain_FormClosed;
             Load += FrmMain_Load;
             ResumeLayout(false);
         }

@@ -126,6 +126,8 @@
             Controls.Add(BtnAtivar);
             Controls.Add(LVConnections);
             Name = "FrmMain";
+            FormClosed += FrmMain_FormClosed;
+            Load += FrmMain_Load;
             ctxMenuCommands.ResumeLayout(false);
             ResumeLayout(false);
         }
